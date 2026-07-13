@@ -6,9 +6,13 @@
   --color-accent: #ff6600;
   --color-accent-dark: #cc5200;
   --color-success: #28a745;
+  --color-success-dark: #1e7e34;
   --color-warning: #ffc107;
+  --color-warning-dark: #d39e00;
   --color-danger: #dc3545;
+  --color-danger-dark: #bd2130;
   --color-info: #17a2b8;
+  --color-info-dark: #117a8b;
 
   --color-bg-primary: #ffffff;
   --color-bg-secondary: #f8f9fa;
@@ -100,6 +104,10 @@
   --color-secondary: #66b3ff;
   --color-accent: #ff8533;
   --color-accent-dark: #ff994d;
+  --color-success-dark: #1e7e34;
+  --color-warning-dark: #d39e00;
+  --color-danger-dark: #bd2130;
+  --color-info-dark: #117a8b;
 
   --color-bg-primary: #1a1d21;
   --color-bg-secondary: #212529;
