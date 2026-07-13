@@ -178,6 +178,15 @@
                     <li>Email: caed.ariquemes@ifro.edu.br</li>
                 </ul>
             </div>
+            <div class="footer-section">
+                <h4 class="footer-title">Criadores</h4>
+                <ul class="footer-contact">
+                    <li>Mariana Deganute Rodrigues</li>
+                    <li><a href="mailto:marianadeganute7@gmail.com" class="footer-link">marianadeganute7@gmail.com</a></li>
+                    <li style="margin-top: var(--spacing-sm)">Vinicius Gabriel Ferreira de Araújo</li>
+                    <li><a href="mailto:g27826909@gmail.com" class="footer-link">g27826909@gmail.com</a></li>
+                </ul>
+            </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 IFRO Campus Ariquemes - Todos os direitos reservados.</p>

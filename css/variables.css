@@ -93,8 +93,8 @@
 
   --focus-ring: 0 0 0 3px rgba(0, 102, 204, 0.4);
 
-  --gradient-hero: linear-gradient(135deg, #003366 0%, #0066cc 55%, #1e88e5 100%);
-  --gradient-accent: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+  --gradient-hero: linear-gradient(135deg, #002244 0%, #004080 40%, #0066cc 100%);
+  --gradient-accent: linear-gradient(135deg, #ff6600 0%, #ff8533 50%, #ffaa33 100%);
 }
 
 [data-theme="dark"] {
@@ -137,6 +137,6 @@
 
   --focus-ring: 0 0 0 3px rgba(102, 179, 255, 0.4);
 
-  --gradient-hero: linear-gradient(135deg, #0b1f3a 0%, #123a66 55%, #1e5588 100%);
-  --gradient-accent: linear-gradient(135deg, #ff8c42 0%, #ffac6b 100%);
+  --gradient-hero: linear-gradient(135deg, #0a1628 0%, #0b2a4a 40%, #123a66 100%);
+  --gradient-accent: linear-gradient(135deg, #cc5200 0%, #ff8c42 50%, #ffac6b 100%);
 }
