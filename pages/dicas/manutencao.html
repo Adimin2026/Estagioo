@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../">
+    <title>Manutenção de Computadores - IFRO Campus Ariquemes</title>
+    <meta name="description" content="Dicas de manutenção de computadores: hardware, sistemas operacionais, redes e resolução de problemas.">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/dicas.css">
+    <link rel="icon" href="assets/images/logo-ifro.svg" type="image/svg+xml">
+</head>
+<body>
+    <div id="header-root"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb"><ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html" class="breadcrumb-link">Início</a></li>
+                <li class="breadcrumb-item"><a href="pages/dicas/index.html" class="breadcrumb-link">Dicas</a></li>
+                <li class="breadcrumb-item"><span class="breadcrumb-current">Manutenção de Computadores</span></li>
+            </ol></nav>
+
+            <header class="page-header">
+                <h1 class="page-title">Manutenção de Computadores</h1>
+                <p class="page-subtitle">Hardware, sistemas operacionais, redes e resolução de problemas do dia a dia.</p>
+            </header>
+
+            <div class="content-wrapper">
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 16l-3 3-4.7-1.3a4 4 0 0 0-5-5L3 8l3-3 4.7 1.3z"></path></svg></div>
+                        <h3 class="tip-card-title">1. Limpeza preventiva de hardware</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Remova poeira da fonte, cooler e placas a cada 3 meses com ar comprimido. Poeira causa superaquecimento e travamentos.</p>
+                        <div class="tip-tags"><span class="tip-tag">Hardware</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 16l-3 3-4.7-1.3a4 4 0 0 0-5-5L3 8l3-3 4.7 1.3z"></path></svg></div>
+                        <h3 class="tip-card-title">2. Monte a pasta térmica corretamente</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Uma camada fina e uniforme é suficiente. Excesso de pasta térmica piora a dissipação. Troque a cada 1–2 anos.</p>
+                        <div class="tip-tags"><span class="tip-tag">Hardware</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 16l-3 3-4.7-1.3a4 4 0 0 0-5-5L3 8l3-3 4.7 1.3z"></path></svg></div>
+                        <h3 class="tip-card-title">3. Windows lento? Verifique a inicialização</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Abra o Gerenciador de Tarefas (Ctrl+Shift+Esc), aba Inicializar, e desative programas desnecessários. Libere também o disco com <code>%temp%</code>.</p>
+                        <div class="tip-tags"><span class="tip-tag">Windows</span><span class="tip-tag">Performance</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 16l-3 3-4.7-1.3a4 4 0 0 0-5-5L3 8l3-3 4.7 1.3z"></path></svg></div>
+                        <h3 class="tip-card-title">4. Rede sem acesso? Reinicie o stack TCP/IP</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>No Prompt de Comando (como administrador):</p>
+                        <pre class="code-block"><code>ipconfig /release
+ipconfig /renew
+ipconfig /flushdns
+netsh int ip reset</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Redes</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 0 5 5L21 16l-3 3-4.7-1.3a4 4 0 0 0-5-5L3 8l3-3 4.7 1.3z"></path></svg></div>
+                        <h3 class="tip-card-title">5. Sem vídeo? Teste com outro cabo e monitor</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Antes de trocar peças, descarte os mais simples: cabo solto, fonte desligada da tomada correta ou seleção errada de entrada no monitor (VGA/HDMI).</p>
+                        <div class="tip-tags"><span class="tip-tag">Troubleshooting</span></div>
+                    </div>
+                </article>
+
+                <div class="tips-cta">
+                    <h2 class="section-title">Problema não listado?</h2>
+                    <p>Descreva o sintoma no Chat IA e receba um passo a passo de diagnóstico.</p>
+                    <a href="pages/chat.html" class="btn btn-primary">Abrir Chat IA</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+        <script src="js/utils/storage.js" defer></script>
+    <script src="js/theme-toggle.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/components.js" defer></script>
+    <script src="js/main.js" defer></script>
+</body>
+</html>

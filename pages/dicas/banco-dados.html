@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../">
+    <title>Banco de Dados - IFRO Campus Ariquemes</title>
+    <meta name="description" content="Dicas de banco de dados: SQL, modelagem, otimização de consultas e backups.">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/dicas.css">
+    <link rel="icon" href="assets/images/logo-ifro.svg" type="image/svg+xml">
+</head>
+<body>
+    <div id="header-root"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb"><ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html" class="breadcrumb-link">Início</a></li>
+                <li class="breadcrumb-item"><a href="pages/dicas/index.html" class="breadcrumb-link">Dicas</a></li>
+                <li class="breadcrumb-item"><span class="breadcrumb-current">Banco de Dados</span></li>
+            </ol></nav>
+
+            <header class="page-header">
+                <h1 class="page-title">Banco de Dados</h1>
+                <p class="page-subtitle">SQL, modelagem, otimização de consultas e estratégias de backup.</p>
+            </header>
+
+            <div class="content-wrapper">
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">1. Normalize antes de codar</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Aplique as 3 primeiras formas normais para evitar redundância. Uma tabela <code>cliente</code> separada de <code>pedido</code> evita dados duplicados.</p>
+                        <div class="tip-tags"><span class="tip-tag">Modelagem</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">2. Use índices em colunas de busca</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Consultas com <code>WHERE</code> ou <code>JOIN</code> frequentes ganham velocidade com índices, mas não exagere: eles tornam os inserts mais lentos.</p>
+                        <pre class="code-block"><code>CREATE INDEX idx_pedido_cliente
+ON pedido(cliente_id);</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span><span class="tip-tag">Performance</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">3. Evite SELECT * em produção</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Traga só o que precisa. <code>SELECT nome, email FROM usuario</code> é mais leve e claro que <code>SELECT *</code>.</p>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">4. Backup automático e testado</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Agende backups diários e, pelo menos uma vez por mês, restaure um backup em ambiente de teste para confirmar que funciona.</p>
+                        <pre class="code-block"><code>mysqldump -u root -p banco > backup_$(date +%F).sql</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Backup</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">5. Use transações em operações críticas</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Garanta consistência com <code>BEGIN TRANSACTION / COMMIT / ROLLBACK</code> em transferências e atualizações em lote.</p>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span><span class="tip-tag">Integridade</span></div>
+                    </div>
+                </article>
+
+                <div class="tips-cta">
+                    <h2 class="section-title">Quer um modelo de banco?</h2>
+                    <p>Peça à IA do Chat um exemplo de schema para o seu estágio.</p>
+                    <a href="pages/chat.html" class="btn btn-primary">Abrir Chat IA</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+        <script src="js/utils/storage.js" defer></script>
+    <script src="js/theme-toggle.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/components.js" defer></script>
+    <script src="js/main.js" defer></script>
+</body>
+</html>

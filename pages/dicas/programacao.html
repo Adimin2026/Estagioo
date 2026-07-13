@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../">
+    <title>Dicas de Programação - IFRO Campus Ariquemes</title>
+    <meta name="description" content="Dicas de programação para estagiários: JavaScript, Python, Git, VS Code e boas práticas.">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/dicas.css">
+    <link rel="icon" href="assets/images/logo-ifro.svg" type="image/svg+xml">
+</head>
+<body>
+    <div id="header-root"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb"><ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html" class="breadcrumb-link">Início</a></li>
+                <li class="breadcrumb-item"><a href="pages/dicas/index.html" class="breadcrumb-link">Dicas</a></li>
+                <li class="breadcrumb-item"><span class="breadcrumb-current">Programação</span></li>
+            </ol></nav>
+
+            <header class="page-header">
+                <h1 class="page-title">Dicas de Programação</h1>
+                <p class="page-subtitle">Boas práticas, atalhos e conceitos essenciais para estagiários de desenvolvimento.</p>
+            </header>
+
+            <div class="content-wrapper">
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">1. Use Git desde o primeiro dia</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Versione tudo. Crie branches por feature, faça commits pequenos e com mensagens claras. Isso facilita revisões e evita perda de trabalho.</p>
+                        <pre class="code-block"><code>git checkout -b feature/login
+git add .
+git commit -m "Adiciona tela de login"
+git push origin feature/login</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Git</span><span class="tip-tag">Iniciante</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">2. Nomes claros valem mais que comentários</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Prefira <code>calcularSalarioLiquido()</code> a <code>calc()</code>. Código se explica melhor com bons nomes do que com comentários explicativos.</p>
+                        <div class="tip-tags"><span class="tip-tag">Boas práticas</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">3. Aprenda a depurar, não só codar</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Use o debugger do VS Code, coloque breakpoints e inspecione variáveis. Saber ler o stack trace economiza horas.</p>
+                        <div class="tip-tags"><span class="tip-tag">VS Code</span><span class="tip-tag">Debug</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">4. Atalhos do VS Code que salvam tempo</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <pre class="code-block"><code>Ctrl + P        -> ir para arquivo
+Ctrl + Shift + P -> paleta de comandos
+F12             -> ir para definição
+Alt + Seta     -> mover linha
+Ctrl + /        -> comentar/descomentar</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">VS Code</span><span class="tip-tag">Produtividade</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">5. Python: virtualenv para cada projeto</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Isole dependências para evitar conflitos entre projetos.</p>
+                        <pre class="code-block"><code>python -m venv venv
+source venv/bin/activate   # Linux/Mac
+pip install -r requirements.txt</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Python</span></div>
+                    </div>
+                </article>
+
+                <div class="tips-cta">
+                    <h2 class="section-title">Ficou com dúvida?</h2>
+                    <p>Pergunte à nossa IA no Chat e receba explicações passo a passo.</p>
+                    <a href="pages/chat.html" class="btn btn-primary">Abrir Chat IA</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+        <script src="js/utils/storage.js" defer></script>
+    <script src="js/theme-toggle.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/components.js" defer></script>
+    <script src="js/main.js" defer></script>
+</body>
+</html>
