@@ -27,6 +27,7 @@ window.initNavigation = function () {
     navToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       navList.classList.toggle('active');
+      navToggle.classList.toggle('active');
     });
   }
 
