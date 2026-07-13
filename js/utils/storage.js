@@ -1,5 +1,5 @@
 // Utilitários de armazenamento local (localStorage)
-// Usado para tema, histórico do chat e preferências do usuário.
+// Usado para tema e preferências do usuário.
 // Exposto como global: window.Storage
 
 window.Storage = {
@@ -30,18 +30,5 @@ window.Storage = {
     } catch (e) {
       return false;
     }
-  },
-
-  getChatHistory() {
-    return this.get('chat_history', []);
-  },
-
-  setChatHistory(history) {
-    const trimmed = history.slice(-50);
-    return this.set('chat_history', trimmed);
-  },
-
-  clearChatHistory() {
-    return this.remove('chat_history');
   },
 };

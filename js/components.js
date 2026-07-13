@@ -40,7 +40,6 @@
                             <li><a href="pages/dicas/impressoras.html" class="dropdown-item">Manutenção de Impressoras</a></li>
                         </ul>
                     </li>
-                    <li><a href="pages/chat.html" class="nav-link">Chat IA</a></li>
                     <li><a href="pages/sobre.html" class="nav-link">Sobre</a></li>
                 </ul>
             </nav>
@@ -120,14 +119,6 @@
                 </ul>
             </li>
             <li class="sidebar-item">
-                <a href="pages/chat.html" class="sidebar-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span>Chat IA</span>
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="pages/sobre.html" class="sidebar-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -167,7 +158,6 @@
                     <li><a href="pages/estagio-info.html">Informações de Estágio</a></li>
                     <li><a href="pages/documentos.html">Documentos</a></li>
                     <li><a href="pages/dicas/index.html">Dicas Técnicas</a></li>
-                    <li><a href="pages/chat.html">Chat IA</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>
                 </ul>
             </div>
@@ -184,8 +174,8 @@
                 <h4 class="footer-title">Contato</h4>
                 <ul class="footer-contact">
                     <li>IFRO Campus Ariquemes</li>
-                    <li>Telefone: (69) 3441-1234</li>
-                    <li>Email: estagio.ariquemes@ifro.edu.br</li>
+                    <li>Telefone: 2103 - 0121</li>
+                    <li>Email: caed.ariquemes@ifro.edu.br</li>
                 </ul>
             </div>
         </div>
