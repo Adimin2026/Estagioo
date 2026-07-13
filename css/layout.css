@@ -54,7 +54,9 @@
 
 /* Menu de navegação */
 .nav-toggle {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     cursor: pointer;
@@ -116,7 +118,7 @@
 }
 
 .nav-list {
-    display: flex;
+    display: none;
     list-style: none;
     gap: var(--spacing-md);
     margin: 0;
@@ -720,72 +722,6 @@
 
 /* Responsividade para celular */
 @media (max-width: 768px) {
-    .nav-toggle {
-        display: block;
-    }
-
-    .nav-list {
-        position: absolute;
-        top: calc(100% + var(--header-height));
-        left: var(--container-padding);
-        right: var(--container-padding);
-        background-color: var(--color-bg-card);
-        flex-direction: column;
-        box-shadow: var(--shadow-xl);
-        padding: var(--spacing-md);
-        border-radius: var(--border-radius-lg);
-        border: 1px solid var(--color-border-light);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-8px) scale(0.98);
-        transition: all var(--transition-base);
-        z-index: var(--z-index-dropdown);
-        max-height: calc(100vh - var(--header-height) - var(--spacing-xl) * 2);
-        overflow-y: auto;
-    }
-
-    .nav-list.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0) scale(1);
-    }
-
-    .nav-dropdown {
-        position: relative;
-    }
-
-    .nav-dropdown .dropdown-menu {
-        position: static;
-        box-shadow: none;
-        border: none;
-        padding-left: var(--spacing-lg);
-        margin: 0;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        display: none;
-    }
-
-    .nav-dropdown.active .dropdown-menu {
-        display: block;
-    }
-
-    .nav-dropdown .dropdown-toggle {
-        display: inline-flex;
-    }
-
-    .sidebar-toggle {
-        display: block;
-    }
-
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.active {
-        transform: translateX(0);
-    }
-
     .page-title {
         font-size: var(--font-size-3xl);
     }
