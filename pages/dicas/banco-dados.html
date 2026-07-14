@@ -89,6 +89,41 @@ ON pedido(cliente_id);</code></pre>
                     </div>
                 </article>
 
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">6. Conheça os tipos de JOIN e quando usar cada um</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p><code>INNER JOIN</code> retorna registros com correspondência em ambas as tabelas. <code>LEFT JOIN</code> retorna todos da esquerda, mesmo sem correspondência. <code>RIGHT JOIN</code> e <code>FULL JOIN</code> completam o quadro. Escolha errada custa performance.</p>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span><span class="tip-tag">Consultas</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">7. Use EXPLAIN para analisar consultas lentas</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>O comando <code>EXPLAIN</code> mostra como o banco executa sua consulta: quais índices usa, quantas linhas examina, etc. Com isso você identifica gargalos e otimiza.</p>
+                        <pre class="code-block"><code>EXPLAIN SELECT * FROM pedidos
+WHERE data BETWEEN '2025-01-01' AND '2025-12-31';</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Otimização</span><span class="tip-tag">SQL</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></div>
+                        <h3 class="tip-card-title">8. Modele pensando no futuro: evite campos booleanos</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Em vez de <code>ativo BOOLEAN</code>, prefira <code>status VARCHAR(20)</code> com valores como 'ativo', 'inativo', 'suspenso'. Isso permite evoluir sem alterar a estrutura da tabela.</p>
+                        <div class="tip-tags"><span class="tip-tag">Modelagem</span><span class="tip-tag">Boas práticas</span></div>
+                    </div>
+                </article>
+
             </div>
         </div>
     </main>
