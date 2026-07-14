@@ -5,7 +5,9 @@
     background: var(--gradient-hero);
     color: var(--color-text-inverse);
     margin-top: var(--header-height);
-    border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
+    border-radius: var(--border-radius-xl);
+    margin-left: var(--container-padding);
+    margin-right: var(--container-padding);
     position: relative;
     overflow: hidden;
 }

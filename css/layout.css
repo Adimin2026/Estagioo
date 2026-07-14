@@ -736,6 +736,9 @@
     margin-top: var(--header-height);
     position: relative;
     overflow: hidden;
+    border-radius: var(--border-radius-xl);
+    margin-left: var(--container-padding);
+    margin-right: var(--container-padding);
 }
 
 .page-header::before {
