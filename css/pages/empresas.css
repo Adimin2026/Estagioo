@@ -1,6 +1,0 @@
-.badge-container {
-    margin: var(--spacing-lg) 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-}

@@ -196,6 +196,13 @@
     justify-content: center;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-lg);
+    overflow: hidden;
+}
+
+.testimonial-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .testimonial-text {

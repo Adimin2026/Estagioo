@@ -68,6 +68,12 @@
     transition: opacity var(--transition-fast);
 }
 
+[data-theme="dark"] .logo img,
+[data-theme="dark"] .footer-logo img,
+[data-theme="dark"] .sidebar-header .logo-small img {
+    filter: brightness(0) invert(1);
+}
+
 /* Menu de navegação */
 .nav-toggle {
     display: flex;
