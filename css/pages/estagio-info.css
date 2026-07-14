@@ -3,7 +3,7 @@
 /* Informações de Estágio Page Styles */
 .page-header {
     padding: var(--spacing-3xl) 0;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    background: var(--gradient-hero);
     color: var(--color-text-inverse);
     margin-top: var(--header-height);
     position: relative;
