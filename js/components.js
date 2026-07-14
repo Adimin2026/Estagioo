@@ -6,6 +6,7 @@
 
 (function () {
   const headerHTML = `
+<div class="ifro-topbar"></div>
 <header class="header">
     <div class="container">
         <div class="header-content">
