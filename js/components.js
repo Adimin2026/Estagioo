@@ -49,6 +49,7 @@
                         </ul>
                     </li>
                     <li><a href="pages/guia-estagiario.html" class="nav-link">Guia do Estagiário</a></li>
+                    <li><a href="pages/professores.html" class="nav-link">Professores</a></li>
                     <li><a href="pages/sobre.html" class="nav-link">Sobre</a></li>
                 </ul>
             </nav>
@@ -139,6 +140,17 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="pages/professores.html" class="sidebar-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Professores</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="pages/sobre.html" class="sidebar-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -179,6 +191,7 @@
                     <li><a href="pages/documentos.html">Documentos</a></li>
                     <li><a href="pages/dicas/index.html">Dicas Técnicas</a></li>
                     <li><a href="pages/guia-estagiario.html">Guia do Estagiário</a></li>
+                    <li><a href="pages/professores.html">Professores</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>
                 </ul>
             </div>
