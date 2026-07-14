@@ -65,6 +65,40 @@ async function sendApprovalEmail(tip) {
   }
 }
 
+function escHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br>');
+}
+
+async function sendReplyEmail(tip, message) {
+  const transporter = getTransporter();
+  if (!transporter || !tip.email) {
+    throw new Error('E-mail do portal não configurado');
+  }
+  const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+  try {
+    await transporter.sendMail({
+      from: `"Portal de Estágio IFRO" <${process.env.GMAIL_USER}>`,
+      to: tip.email,
+      subject: `Resposta sobre sua dica "${tip.title}" - Portal de Estágio IFRO`,
+      html: `
+        <div style="font-family:Segoe UI,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#212529;">
+          <h2 style="color:#003366;margin-top:0;">Olá, ${escHtml(tip.name || 'estudante')}!</h2>
+          <p>A equipe do Portal de Estágio do IFRO Campus Ariquemes respondeu à sua dica <strong>"${escHtml(tip.title)}"</strong>:</p>
+          <div style="background:#f8f9fa;border-left:4px solid #003366;padding:16px 18px;border-radius:8px;margin:18px 0;line-height:1.7;">${escHtml(message)}</div>
+          <p style="font-size:13px;color:#6c757d;">Você pode acompanhar suas dicas em <a href="${siteUrl}/pages/dicas/index.html" style="color:#0066cc;">nosso portal de dicas</a>.</p>
+          <hr style="border:none;border-top:1px solid #dee2e6;margin:24px 0;">
+          <p style="font-size:12px;color:#6c757d;">Portal de Estágio IFRO Campus Ariquemes &bull; Gerido por estudantes de informática.</p>
+        </div>`
+    });
+  } catch (err) {
+    throw new Error('Falha ao enviar e-mail: ' + err.message);
+  }
+}
+
 app.post('/api/tips', (req, res) => {
   const { name, email, category, title, content, tags } = req.body;
   if (!name || !email || !category || !title || !content) {
@@ -102,6 +136,31 @@ app.put('/api/tips/:id/approve', (req, res) => {
   tip.status = 'approved';
   writeTips(tips);
   sendApprovalEmail(tip);
+  res.json(tip);
+});
+
+app.post('/api/tips/:id/reply', async (req, res) => {
+  const { message } = req.body || {};
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'A mensagem de resposta é obrigatória' });
+  }
+  const tips = readTips();
+  const tip = tips.find(t => t.id === req.params.id);
+  if (!tip) return res.status(404).json({ error: 'Dica não encontrada' });
+
+  tip.replies = tip.replies || [];
+  tip.replies.push({
+    from: process.env.GMAIL_USER || 'portal',
+    message: message.trim(),
+    at: new Date().toISOString()
+  });
+  writeTips(tips);
+
+  try {
+    await sendReplyEmail(tip, message.trim());
+  } catch (err) {
+    return res.status(502).json({ error: err.message, saved: true });
+  }
   res.json(tip);
 });
 
