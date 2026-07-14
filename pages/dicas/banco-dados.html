@@ -36,7 +36,7 @@
 
             <div class="content-wrapper fade-in">
                 <figure class="image-figure">
-                    <img src="assets/images/banco-dados.jpg" alt="Banco de dados" class="content-image content-image--banner" loading="lazy">
+                    <img src="assets/images/banco-dados.svg" alt="Banco de dados representado por cilindros" class="content-image content-image--banner" loading="lazy">
                 </figure>
 
                 <article class="tip-card">
@@ -129,6 +129,71 @@ WHERE data BETWEEN '2026-01-01' AND '2026-12-31';</code></pre>
                     <div class="tip-card-body">
                         <p>Em vez de <code>ativo BOOLEAN</code>, prefira <code>status VARCHAR(20)</code> com valores como 'ativo', 'inativo', 'suspenso'. Isso permite evoluir sem alterar a estrutura da tabela.</p>
                         <div class="tip-tags"><span class="tip-tag">Modelagem</span><span class="tip-tag">Boas práticas</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"></path><path d="M14 16l4 4 4-4"></path></svg></div>
+                        <h3 class="tip-card-title">9. Exemplo prático: modelo e consulta SQL real</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Crie duas tabelas relacionadas, insira dados e faça um <code>JOIN</code> com agregação. SQL 100% executável em MySQL/PostgreSQL:</p>
+                        <pre class="code-block"><code>-- criação das tabelas
+CREATE TABLE cliente (
+    id        INTEGER PRIMARY KEY,
+    nome      VARCHAR(80) NOT NULL,
+    cidade    VARCHAR(50)
+);
+
+CREATE TABLE pedido (
+    id          INTEGER PRIMARY KEY,
+    cliente_id  INTEGER REFERENCES cliente(id),
+    valor       NUMERIC(10,2) NOT NULL,
+    data        DATE NOT NULL
+);
+
+-- inserção de dados
+INSERT INTO cliente (id, nome, cidade) VALUES
+    (1, 'Ana Silva',     'Ariquemes'),
+    (2, 'Bruno Costa',   'Porto Velho'),
+    (3, 'Carla Souza',   'Ariquemes');
+
+INSERT INTO pedido (id, cliente_id, valor, data) VALUES
+    (1, 1, 150.00, '2026-03-01'),
+    (2, 1,  89.90, '2026-03-15'),
+    (3, 2, 320.00, '2026-03-20');</code></pre>
+                        <p>Depois, gere o relatório de total gasto por cliente com <code>JOIN</code> + <code>GROUP BY</code>:</p>
+                        <pre class="code-block"><code>SELECT c.nome,
+       COUNT(p.id)        AS qtd_pedidos,
+       SUM(p.valor)       AS total_gasto
+FROM cliente c
+LEFT JOIN pedido p ON p.cliente_id = c.id
+GROUP BY c.id, c.nome
+ORDER BY total_gasto DESC NULLS LAST;</code></pre>
+                        <p>Resultado esperado (cliente sem pedido aparece com <code>NULL</code> graças ao <code>LEFT JOIN</code>):</p>
+                        <pre class="code-block"><code>nome         | qtd_pedidos | total_gasto
+-------------+-------------+------------
+Ana Silva    |           2 |     239.90
+Bruno Costa  |           1 |     320.00
+Carla Souza  |           0 |       NULL</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span><span class="tip-tag">Exemplo prático</span><span class="tip-tag">JOIN</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="M7 14l3-4 3 3 4-6"></path></svg></div>
+                        <h3 class="tip-card-title">10. Use funções de janela (window functions) para rankings</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Para "top N por grupo" sem subconsultas, use <code>ROW_NUMBER()</code> / <code>RANK()</code>. Exemplo: ranking de pedidos por cliente:</p>
+                        <pre class="code-block"><code>SELECT cliente_id,
+       valor,
+       RANK() OVER (PARTITION BY cliente_id
+                    ORDER BY valor DESC) AS posicao
+FROM pedido;</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">SQL</span><span class="tip-tag">Consultas avançadas</span></div>
                     </div>
                 </article>
 

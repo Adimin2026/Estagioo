@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="Exemplo de código de programação">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a5fb4"/>
+      <stop offset="0.55" stop-color="#2272d9"/>
+      <stop offset="1" stop-color="#5299e8"/>
+    </linearGradient>
+    <linearGradient id="editor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" fill="url(#bg)"/>
+  <circle cx="1010" cy="60" r="200" fill="#ffffff" opacity="0.07"/>
+  <circle cx="160" cy="280" r="150" fill="#ffffff" opacity="0.05"/>
+
+  <rect x="70" y="34" width="1060" height="252" rx="16" fill="url(#editor)" stroke="#30363d" stroke-width="2"/>
+  <circle cx="102" cy="64" r="7" fill="#ff5f56"/>
+  <circle cx="126" cy="64" r="7" fill="#ffbd2e"/>
+  <circle cx="150" cy="64" r="7" fill="#27c93f"/>
+  <text x="600" y="69" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="15" fill="#8b949e">programacao.js</text>
+  <line x1="70" y1="86" x2="1130" y2="86" stroke="#30363d" stroke-width="1"/>
+
+  <g font-family="Consolas, 'Courier New', monospace" font-size="17">
+    <text x="100" y="124"><tspan fill="#ff7b72">function</tspan> <tspan fill="#d2a8ff">calcularMedia</tspan><tspan fill="#c9d1d9">(</tspan><tspan fill="#79c0ff">notas</tspan><tspan fill="#c9d1d9">) {</tspan></text>
+    <text x="128" y="152"><tspan fill="#ff7b72">const</tspan> <tspan fill="#79c0ff">total</tspan> <tspan fill="#c9d1d9">=</tspan> <tspan fill="#79c0ff">notas</tspan><tspan fill="#c9d1d9">.</tspan><tspan fill="#d2a8ff">reduce</tspan><tspan fill="#c9d1d9">((</tspan><tspan fill="#a5d6ff">s</tspan><tspan fill="#c9d1d9">, </tspan><tspan fill="#a5d6ff">n</tspan><tspan fill="#c9d1d9">) =&gt; </tspan><tspan fill="#a5d6ff">s</tspan> <tspan fill="#c9d1d9">+ </tspan><tspan fill="#a5d6ff">n</tspan><tspan fill="#c9d1d9">, </tspan><tspan fill="#79c0ff">0</tspan><tspan fill="#c9d1d9">);</tspan></text>
+    <text x="128" y="180"><tspan fill="#ff7b72">return</tspan> <tspan fill="#79c0ff">total</tspan> <tspan fill="#c9d1d9">/</tspan> <tspan fill="#79c0ff">notas</tspan><tspan fill="#c9d1d9">.</tspan><tspan fill="#d2a8ff">length</tspan><tspan fill="#c9d1d9">;</tspan></text>
+    <text x="100" y="208"><tspan fill="#c9d1d9">}</tspan></text>
+    <text x="100" y="240" fill="#8b949e">// exemplo de uso</text>
+    <text x="100" y="268"><tspan fill="#ff7b72">const</tspan> <tspan fill="#79c0ff">media</tspan> <tspan fill="#c9d1d9">=</tspan> <tspan fill="#d2a8ff">calcularMedia</tspan><tspan fill="#c9d1d9">([</tspan><tspan fill="#a5d6ff">7</tspan><tspan fill="#c9d1d9">, </tspan><tspan fill="#a5d6ff">9</tspan><tspan fill="#c9d1d9">, </tspan><tspan fill="#a5d6ff">8</tspan><tspan fill="#c9d1d9">]);</tspan></text>
+  </g>
+</svg>

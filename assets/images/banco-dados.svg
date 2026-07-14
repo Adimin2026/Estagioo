@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" role="img" aria-label="Banco de dados representado por cilindros">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a5fb4"/>
+      <stop offset="0.55" stop-color="#2272d9"/>
+      <stop offset="1" stop-color="#5299e8"/>
+    </linearGradient>
+    <linearGradient id="cyl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eaf3ff"/>
+      <stop offset="1" stop-color="#9cc4f5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" fill="url(#bg)"/>
+  <circle cx="1050" cy="70" r="180" fill="#ffffff" opacity="0.07"/>
+  <circle cx="160" cy="270" r="140" fill="#ffffff" opacity="0.05"/>
+
+  <g stroke="#5b8fd6" stroke-width="2" fill="url(#cyl)">
+    <!-- cilindro esquerdo -->
+    <g transform="translate(360 160)">
+      <path d="M -70 -60 L -70 60 A 70 24 0 0 0 70 60 L 70 -60 Z"/>
+      <ellipse cx="0" cy="-60" rx="70" ry="24" fill="#eaf3ff"/>
+      <path d="M -70 -10 A 70 24 0 0 0 70 -10" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+      <path d="M -70 30 A 70 24 0 0 0 70 30" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+    </g>
+    <!-- cilindro central (maior) -->
+    <g transform="translate(600 160)">
+      <path d="M -90 -80 L -90 80 A 90 30 0 0 0 90 80 L 90 -80 Z"/>
+      <ellipse cx="0" cy="-80" rx="90" ry="30" fill="#eaf3ff"/>
+      <path d="M -90 -25 A 90 30 0 0 0 90 -25" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+      <path d="M -90 35 A 90 30 0 0 0 90 35" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+    </g>
+    <!-- cilindro direito -->
+    <g transform="translate(840 160)">
+      <path d="M -70 -60 L -70 60 A 70 24 0 0 0 70 60 L 70 -60 Z"/>
+      <ellipse cx="0" cy="-60" rx="70" ry="24" fill="#eaf3ff"/>
+      <path d="M -70 -10 A 70 24 0 0 0 70 -10" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+      <path d="M -70 30 A 70 24 0 0 0 70 30" fill="none" stroke="#7ba9e0" stroke-width="1.5"/>
+    </g>
+  </g>
+
+  <text x="600" y="300" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="30" font-weight="700" fill="#ffffff" opacity="0.95">SELECT • INSERT • JOIN • CREATE TABLE</text>
+</svg>
