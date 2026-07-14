@@ -119,23 +119,7 @@
     <script src="js/navigation.js" defer></script>
     <script src="js/animations.js" defer></script>
     <script src="js/components.js" defer></script>
+    <script src="js/enviar-dica.js" defer></script>
     <script src="js/main.js" defer></script>
-    <script>
-        document.getElementById('tip-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const success = document.getElementById('form-success');
-            const error = document.getElementById('form-error');
-            error.style.display = 'none';
-            success.style.display = 'none';
-            if (this.checkValidity()) {
-                success.style.display = 'flex';
-                this.reset();
-                setTimeout(() => { success.style.display = 'none'; }, 8000);
-            } else {
-                error.style.display = 'flex';
-                this.reportValidity();
-            }
-        });
-    </script>
 </body>
 </html>

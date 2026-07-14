@@ -214,6 +214,18 @@
     margin: 0 auto var(--spacing-lg);
 }
 
+.tip-search-wrapper {
+    max-width: 480px;
+    margin: 0 auto var(--spacing-xl);
+}
+
+.tip-search-wrapper .form-input {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-full);
+    text-align: center;
+}
+
 @media (max-width: 768px) {
     .page-title { font-size: var(--font-size-3xl); }
     .tips-grid { grid-template-columns: 1fr; }
