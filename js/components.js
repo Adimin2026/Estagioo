@@ -26,6 +26,7 @@
                 <ul class="nav-list">
                     <li><a href="index.html" class="nav-link">Início</a></li>
                     <li><a href="pages/estagio-info.html" class="nav-link">Informações de Estágio</a></li>
+                    <li><a href="pages/empresas.html" class="nav-link">Empresas</a></li>
                     <li><a href="pages/documentos.html" class="nav-link">Documentos</a></li>
                     <li class="nav-dropdown">
                         <a href="pages/dicas/index.html" class="nav-link">Dicas</a>
@@ -94,6 +95,16 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="pages/empresas.html" class="sidebar-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="9" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M12 17v-4"></path>
+                        <path d="M8 21V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"></path>
+                    </svg>
+                    <span>Empresas</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="pages/documentos.html" class="sidebar-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -157,6 +168,7 @@
                 <ul class="footer-links">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="pages/estagio-info.html">Informações de Estágio</a></li>
+                    <li><a href="pages/empresas.html">Empresas Parceiras</a></li>
                     <li><a href="pages/documentos.html">Documentos</a></li>
                     <li><a href="pages/dicas/index.html">Dicas Técnicas</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>

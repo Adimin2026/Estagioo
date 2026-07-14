@@ -97,6 +97,92 @@ pip install -r requirements.txt</code></pre>
                     </div>
                 </article>
 
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">6. Entenda a diferença entre HTML, CSS e JS</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>HTML é a estrutura, CSS é o estilo e JavaScript é o comportamento. São como um prédio, a decoração e as funcionalidades elétricas. Misturar as responsabilidades gera código difícil de manter.</p>
+                        <div class="tip-tags"><span class="tip-tag">Front-end</span><span class="tip-tag">Iniciante</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">7. Aprenda a usar o console do navegador</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>O console do desenvolvedor (F12) é seu melhor amigo: <code>console.log()</code> para debug, inspecione elementos, analise requisições de rede e veja erros em tempo real.</p>
+                        <pre class="code-block"><code>console.log('Debug:', minhaVariavel);
+console.table(arrayDeDados);
+console.error('Erro encontrado');</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">Debug</span><span class="tip-tag">Iniciante</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">8. DRY e KISS: os princípios que salvam seu código</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p><strong>DRY</strong> (Don't Repeat Yourself): se você copiou e colou o mesmo código duas vezes, crie uma função. <strong>KISS</strong> (Keep It Simple): soluções simples são mais fáceis de dar manutenção.</p>
+                        <div class="tip-tags"><span class="tip-tag">Boas práticas</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">9. JavaScript moderno: const e let em vez de var</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Use <code>const</code> para valores que não mudam e <code>let</code> para variáveis. Evite <code>var</code> — ele tem escopo de função e pode causar bugs inesperados.</p>
+                        <pre class="code-block"><code>const API_URL = 'https://api.exemplo.com';
+let contador = 0;
+contador += 1;</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">JavaScript</span><span class="tip-tag">ES6+</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">10. Faça code review antes de mergear</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Sempre peça para outro desenvolvedor revisar seu código antes de fazer merge. Uma segunda visão encontra bugs, sugere melhorias e espalha conhecimento pela equipe.</p>
+                        <div class="tip-tags"><span class="tip-tag">Git</span><span class="tip-tag">Colaboração</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">11. Leia documentação oficial, não só tutoriais</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Tutoriais são ótimos para começar, mas a documentação oficial (MDN, docs.python.org) é mais completa, precisa e atualizada. Acostume-se a consultá-la.</p>
+                        <div class="tip-tags"><span class="tip-tag">Carreira</span><span class="tip-tag">Estudo</span></div>
+                    </div>
+                </article>
+
+                <article class="tip-card">
+                    <div class="tip-card-header">
+                        <div class="tip-card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="tip-card-title">12. Ferramentas de formatação automática</h3>
+                    </div>
+                    <div class="tip-card-body">
+                        <p>Use formatadores automáticos como Prettier (JS/HTML/CSS) ou Black (Python). Eles garantem consistência e evitam discussões sobre estilo de código.</p>
+                        <pre class="code-block"><code>// No VS Code, instale a extensão Prettier
+// Configure para formatar ao salvar:
+// settings.json: "editor.formatOnSave": true</code></pre>
+                        <div class="tip-tags"><span class="tip-tag">VS Code</span><span class="tip-tag">Produtividade</span></div>
+                    </div>
+                </article>
+
             </div>
         </div>
     </main>
