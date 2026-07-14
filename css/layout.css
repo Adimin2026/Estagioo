@@ -203,6 +203,12 @@
     transform: rotate(180deg);
 }
 
+.nav-dropdown.active .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 .header-actions {
     display: flex;
     align-items: center;
@@ -820,6 +826,25 @@
 
 .section-content p {
     margin-bottom: var(--spacing-md);
+}
+
+/* Desktop: mostra nav-list horizontal e esconde hamburger */
+@media (min-width: 769px) {
+    .nav-toggle {
+        display: none;
+    }
+
+    .nav-list {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        min-width: 220px;
+    }
 }
 
 /* Responsividade para celular */

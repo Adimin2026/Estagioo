@@ -49,6 +49,7 @@
                             <li><a href="pages/enviar-dica.html" class="dropdown-item">Envie sua Dica</a></li>
                         </ul>
                     </li>
+                    <li><a href="pages/guia-estagiario.html" class="nav-link">Guia do Estagiário</a></li>
                     <li><a href="pages/sobre.html" class="nav-link">Sobre</a></li>
                 </ul>
             </nav>
@@ -139,6 +140,16 @@
                 </ul>
             </li>
             <li class="sidebar-item">
+                <a href="pages/guia-estagiario.html" class="sidebar-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                    <span>Guia do Estagiário</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="pages/sobre.html" class="sidebar-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -179,6 +190,7 @@
                     <li><a href="pages/empresas.html">Empresas Parceiras</a></li>
                     <li><a href="pages/documentos.html">Documentos</a></li>
                     <li><a href="pages/dicas/index.html">Dicas Técnicas</a></li>
+                    <li><a href="pages/guia-estagiario.html">Guia do Estagiário</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>
                 </ul>
             </div>
