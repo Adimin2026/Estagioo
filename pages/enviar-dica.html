@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Envie sua Dica - IFRO Campus Ariquemes</title>
+    <meta name="description" content="Compartilhe seu conhecimento técnico com outros estudantes. Envie sua dica para o Portal de Estágio do IFRO.">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="icon" href="assets/images/logo-ifro.svg" type="image/svg+xml">
+</head>
+<body>
+    <div id="header-root"></div>
+
+    <main class="main-content">
+        <div class="container">
+            <nav class="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="index.html" class="breadcrumb-link">Início</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="breadcrumb-current">Envie sua Dica</span>
+                    </li>
+                </ol>
+            </nav>
+
+            <header class="page-header">
+                <h1 class="page-title">Envie sua Dica</h1>
+                <p class="page-subtitle">Compartilhe seu conhecimento técnico com a comunidade de estagiários do IFRO</p>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="content-section">
+                    <h2 class="section-title">Contribua com o Portal</h2>
+                    <div class="section-content">
+                        <p>Este portal é mantido por estudantes para estudantes. Se você tem uma dica técnica, boas práticas ou um aprendizado que gostaria de compartilhar, preencha o formulário abaixo. Sua contribuição será revisada pela equipe e publicada no site.</p>
+                    </div>
+                </div>
+
+                <form class="tip-form" id="tip-form" novalidate>
+                    <div class="form-grid form-grid-2">
+                        <div class="form-group">
+                            <label for="name" class="form-label required">Seu Nome</label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Como você quer ser creditado" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label required">Seu E-mail</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Para entrarmos em contato" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category" class="form-label required">Categoria</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Programação">Programação</option>
+                            <option value="Manutenção de Computadores">Manutenção de Computadores</option>
+                            <option value="Banco de Dados">Banco de Dados</option>
+                            <option value="Manutenção de Impressoras">Manutenção de Impressoras</option>
+                            <option value="Outra">Outra</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title" class="form-label required">Título da Dica</label>
+                        <input type="text" id="title" name="title" class="form-input" placeholder="Ex: Como otimizar consultas SQL" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content" class="form-label required">Conteúdo da Dica</label>
+                        <textarea id="content" name="content" class="form-textarea" rows="8" placeholder="Descreva sua dica em detalhes. Inclua exemplos de código, comandos ou passo a passo se possível." required></textarea>
+                        <small class="form-help">Mínimo de 50 caracteres. Seja claro e objetivo.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags" class="form-label">Tags (separadas por vírgula)</label>
+                        <input type="text" id="tags" name="tags" class="form-input" placeholder="Ex: SQL, otimização, performance">
+                        <small class="form-help">Ajude outros estudantes a encontrar sua dica.</small>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="agree" name="agree" class="form-check-input" required>
+                        <label for="agree" class="form-check-label">Concordo que minha dica pode ser publicada no portal e editada para clareza.</label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">Enviar Dica</button>
+                        <button type="reset" class="btn btn-secondary">Limpar</button>
+                    </div>
+
+                    <div id="form-success" class="alert alert-success" style="display:none;">
+                        <div class="alert-content">
+                            <h4 class="alert-title">Dica enviada com sucesso!</h4>
+                            <p class="alert-message">Obrigado por contribuir! Nossa equipe vai revisar e publicar sua dica em breve.</p>
+                        </div>
+                    </div>
+
+                    <div id="form-error" class="alert alert-danger" style="display:none;">
+                        <div class="alert-content">
+                            <h4 class="alert-title">Erro ao enviar</h4>
+                            <p class="alert-message">Verifique os campos obrigatórios e tente novamente.</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/utils/storage.js" defer></script>
+    <script src="js/theme-toggle.js" defer></script>
+    <script src="js/navigation.js" defer></script>
+    <script src="js/animations.js" defer></script>
+    <script src="js/components.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <script>
+        document.getElementById('tip-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const success = document.getElementById('form-success');
+            const error = document.getElementById('form-error');
+            error.style.display = 'none';
+            success.style.display = 'none';
+            if (this.checkValidity()) {
+                success.style.display = 'flex';
+                this.reset();
+                setTimeout(() => { success.style.display = 'none'; }, 8000);
+            } else {
+                error.style.display = 'flex';
+                this.reportValidity();
+            }
+        });
+    </script>
+</body>
+</html>

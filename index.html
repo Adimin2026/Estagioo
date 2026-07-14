@@ -13,13 +13,13 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="icon" href="assets/images/logo-ifro.svg" type="image/svg+xml">
 </head>
-<body>
+<body class="layout">
     <div id="header-root"></div>
 
     <main>
         <section class="hero">
             <div class="container">
-                <div class="hero-content">
+                <div class="hero-content fade-in">
                     <h1>Início do Portal de Estágio IFRO Campus Ariquemes</h1>
                     <p class="hero-subtitle">Gerido por estudantes de informática para estudantes de informática</p>
                     <p class="hero-description">Esta plataforma oferece informações de estágio, documentos necessários, dicas técnicas e recursos para estagiários novatos de todos os campi do IFRO em Rondônia.</p>
@@ -37,7 +37,7 @@
                     <h2>Acesso Rápido</h2>
                     <p>Recursos essenciais para o seu desenvolvimento profissional</p>
                 </div>
-                <div class="cards-grid">
+                <div class="cards-grid fade-in">
                     <div class="card" onclick="window.location.href='pages/documentos.html'" style="cursor: pointer;">
                         <div class="card-header">
                             <div class="card-icon">
@@ -149,6 +149,7 @@
     <script src="js/theme-toggle.js" defer></script>
     <script src="js/navigation.js" defer></script>
     <script src="js/components.js" defer></script>
+    <script src="js/animations.js" defer></script>
     <script src="js/main.js" defer></script>
 </body>
 </html>

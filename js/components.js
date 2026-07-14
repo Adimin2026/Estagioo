@@ -7,6 +7,11 @@
 (function () {
   const headerHTML = `
 <div class="ifro-topbar"></div>
+<button class="back-to-top" id="back-to-top" aria-label="Voltar ao topo" title="Voltar ao topo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+</button>
 <header class="header">
     <div class="container">
         <div class="header-content">
@@ -40,6 +45,8 @@
                             <li><a href="pages/dicas/manutencao.html" class="dropdown-item">Manutenção de Computadores</a></li>
                             <li><a href="pages/dicas/banco-dados.html" class="dropdown-item">Banco de Dados</a></li>
                             <li><a href="pages/dicas/impressoras.html" class="dropdown-item">Manutenção de Impressoras</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a href="pages/enviar-dica.html" class="dropdown-item">Envie sua Dica</a></li>
                         </ul>
                     </li>
                     <li><a href="pages/sobre.html" class="nav-link">Sobre</a></li>
@@ -128,6 +135,7 @@
                     <li><a href="pages/dicas/manutencao.html" class="sidebar-sublink">Manutenção de Computadores</a></li>
                     <li><a href="pages/dicas/banco-dados.html" class="sidebar-sublink">Banco de Dados</a></li>
                     <li><a href="pages/dicas/impressoras.html" class="sidebar-sublink">Manutenção de Impressoras</a></li>
+                    <li><a href="pages/enviar-dica.html" class="sidebar-sublink">Envie sua Dica</a></li>
                 </ul>
             </li>
             <li class="sidebar-item">
@@ -181,6 +189,7 @@
                     <li><a href="pages/dicas/manutencao.html">Manutenção de Computadores</a></li>
                     <li><a href="pages/dicas/banco-dados.html">Banco de Dados</a></li>
                     <li><a href="pages/dicas/impressoras.html">Manutenção de Impressoras</a></li>
+                    <li><a href="pages/enviar-dica.html">Envie sua Dica</a></li>
                 </ul>
             </div>
             <div class="footer-section">
