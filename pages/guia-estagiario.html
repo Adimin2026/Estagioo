@@ -195,7 +195,7 @@
                     <h2 class="section-title">Depoimentos</h2>
                     <div class="testimonials">
                         <div class="testimonial-card">
-                            <button class="testimonial-avatar testimonial-avatar-btn" onclick="document.getElementById('photo-modal').classList.add('open')" aria-label="Ver foto de Mariana">
+                            <button class="testimonial-avatar testimonial-avatar-btn" onclick="openPhotoModal('assets/images/foto.jpeg', 'Mariana Deganute Rodrigues', 'Estudante de Informática - IFRO Ariquemes')" aria-label="Ver foto de Mariana">
                                 <img src="assets/images/foto.jpeg" alt="Foto de Mariana">
                             </button>
                             <div class="testimonial-content">
@@ -207,7 +207,9 @@
                             </div>
                         </div>
                         <div class="testimonial-card">
-                            <div class="testimonial-avatar">V</div>
+                            <button class="testimonial-avatar testimonial-avatar-btn" onclick="openPhotoModal('assets/images/foto2.jpg', 'Vinicius Gabriel Ferreira de Araújo', 'Estudante de Informática - IFRO Ariquemes')" aria-label="Ver foto de Vinicius">
+                                <img src="assets/images/foto2.jpg" alt="Foto de Vinicius">
+                            </button>
                             <div class="testimonial-content">
                                 <p class="testimonial-text">"O estágio me mostrou como a teoria da sala de aula se aplica no mundo real. Cada desafio no desenvolvimento do portal foi uma lição nova. Meu conselho: mergulhe de cabeça, pergunte muito e nunca pare de aprender."</p>
                                 <div class="testimonial-author">
@@ -220,15 +222,15 @@
                 </section>
 
                 <!-- MODAL FOTO -->
-                <div id="photo-modal" class="photo-modal-overlay" onclick="this.classList.remove('open')">
+                <div id="photo-modal" class="photo-modal-overlay" onclick="closePhotoModal()">
                     <div class="photo-modal" onclick="event.stopPropagation()">
-                        <button class="photo-modal-close" onclick="document.getElementById('photo-modal').classList.remove('open')" aria-label="Fechar">
+                        <button class="photo-modal-close" onclick="closePhotoModal()" aria-label="Fechar">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
-                        <img src="assets/images/foto.jpeg" alt="Foto de Mariana Deganute Rodrigues">
+                        <img id="photo-modal-img" src="" alt="">
                         <div class="photo-modal-caption">
-                            <strong>Mariana Deganute Rodrigues</strong>
-                            <span>Estudante de Informática - IFRO Ariquemes</span>
+                            <strong id="photo-modal-name"></strong>
+                            <span id="photo-modal-role"></span>
                         </div>
                     </div>
                 </div>
@@ -245,13 +247,25 @@
     <script src="js/animations.js" defer></script>
     <script src="js/main.js" defer></script>
     <script>
+    function openPhotoModal(src, name, role) {
+        var modal = document.getElementById('photo-modal');
+        var img = document.getElementById('photo-modal-img');
+        var nameEl = document.getElementById('photo-modal-name');
+        var roleEl = document.getElementById('photo-modal-role');
+        img.src = src;
+        img.alt = 'Foto de ' + name;
+        nameEl.textContent = name;
+        roleEl.textContent = role;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closePhotoModal() {
+        var modal = document.getElementById('photo-modal');
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var modal = document.getElementById('photo-modal');
-            if (modal && modal.classList.contains('open')) {
-                modal.classList.remove('open');
-            }
-        }
+        if (e.key === 'Escape') closePhotoModal();
     });
     </script>
 </body>

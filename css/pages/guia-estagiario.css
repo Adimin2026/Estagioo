@@ -218,6 +218,8 @@
     object-fit: cover;
     object-position: center top;
     border-radius: 50%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 .testimonial-text {
@@ -295,8 +297,10 @@
     width: 100%;
     height: auto;
     display: block;
-    object-fit: cover;
+    object-fit: contain;
     max-height: 70vh;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
 
 .photo-modal-close {
