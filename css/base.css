@@ -196,6 +196,36 @@
 .bg-card { background-color: var(--color-bg-card); }
 .bg-transparent { background-color: transparent; }
 
+.content-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  object-fit: cover;
+}
+
+.content-image--banner {
+  height: 320px;
+  margin: var(--spacing-xl) 0;
+}
+
+.content-image--card {
+  height: 220px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.image-figure {
+  margin: var(--spacing-xl) 0;
+}
+
+.image-figure figcaption {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-sm);
+}
+
 .transition-fast { transition: all var(--transition-fast); }
 .transition-base { transition: all var(--transition-base); }
 .transition-slow { transition: all var(--transition-slow); }

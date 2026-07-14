@@ -1,0 +1,27 @@
+{
+  "name": "Portal de Estágio IFRO Campus Ariquemes",
+  "short_name": "Estágio IFRO",
+  "description": "Portal de estágio do IFRO Campus Ariquemes: documentos, dicas técnicas e informações para estagiários de informática.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#003366",
+  "lang": "pt-BR",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "assets/images/logo-ifro.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/images/logo-ifro.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

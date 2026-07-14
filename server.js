@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +25,44 @@ function readTips() {
 
 function writeTips(tips) {
   fs.writeFileSync(TIPS_FILE, JSON.stringify(tips, null, 2), 'utf-8');
+}
+
+function getTransporter() {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) return null;
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD
+    }
+  });
+}
+
+async function sendApprovalEmail(tip) {
+  const transporter = getTransporter();
+  if (!transporter || !tip.email) return;
+  const siteUrl = process.env.SITE_URL || 'http://localhost:3000';
+  const categorySlug = encodeURIComponent(tip.category || '');
+  try {
+    await transporter.sendMail({
+      from: `"Portal de Estágio IFRO" <${process.env.GMAIL_USER}>`,
+      to: tip.email,
+      subject: 'Sua dica foi aprovada no Portal de Estágio IFRO',
+      html: `
+        <div style="font-family:Segoe UI,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#212529;">
+          <h2 style="color:#003366;margin-top:0;">Olá, ${tip.name || 'estudante'}!</h2>
+          <p>Sua dica <strong>"${tip.title}"</strong> foi <strong style="color:#28a745;">aprovada</strong> e já está publicada no Portal de Estágio do IFRO Campus Ariquemes.</p>
+          <p>Obrigado por contribuir com a comunidade de estagiários de informática!</p>
+          <p style="margin:24px 0;">
+            <a href="${siteUrl}/pages/dicas/index.html?cat=${categorySlug}" style="background:#003366;color:#fff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;">Ver minha dica publicada</a>
+          </p>
+          <hr style="border:none;border-top:1px solid #dee2e6;margin:24px 0;">
+          <p style="font-size:12px;color:#6c757d;">Portal de Estágio IFRO Campus Ariquemes &bull; Gerido por estudantes de informática.</p>
+        </div>`
+    });
+  } catch (err) {
+    console.error('Erro ao enviar e-mail de aprovação:', err.message);
+  }
 }
 
 app.post('/api/tips', (req, res) => {
@@ -61,6 +101,7 @@ app.put('/api/tips/:id/approve', (req, res) => {
   if (!tip) return res.status(404).json({ error: 'Dica não encontrada' });
   tip.status = 'approved';
   writeTips(tips);
+  sendApprovalEmail(tip);
   res.json(tip);
 });
 
