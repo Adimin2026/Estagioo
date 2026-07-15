@@ -42,6 +42,13 @@ window.initNavigation = function () {
     link.addEventListener('click', () => { closeSidebar(); navToggle?.classList.remove('active'); });
   });
 
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar?.classList.contains('active')) {
+      closeSidebar();
+      navToggle?.classList.remove('active');
+    }
+  });
+
   dropdowns.forEach((dd) => {
     const btn = dd.querySelector('.dropdown-toggle');
     if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); dd.classList.toggle('active'); });
