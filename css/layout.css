@@ -886,6 +886,42 @@
     .footer-content {
         grid-template-columns: 1fr;
     }
+
+    /* Ajustes da barra superior no celular */
+    .header-content {
+        gap: var(--spacing-sm);
+    }
+
+    .logo img {
+        height: 32px;
+    }
+
+    .nav-toggle {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+    }
+
+    .header-actions {
+        gap: var(--spacing-xs);
+        flex-shrink: 0;
+    }
+
+    /* Esconde o botão "Instalar" no celular para não estourar a barra */
+    .install-btn {
+        display: none !important;
+    }
+
+    /* Mantém a barra (e o hamburguer) acima do overlay, para fechar o menu */
+    .header {
+        z-index: calc(var(--z-index-modal-backdrop) + 1);
+    }
+
+    /* Sidebar encostada embaixo da barra (descontando a faixa de 4px) */
+    .sidebar {
+        top: calc(var(--header-height) + 4px);
+        height: calc(100vh - var(--header-height) - 4px);
+    }
 }
 
 @media (max-width: 480px) {

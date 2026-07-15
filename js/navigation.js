@@ -38,6 +38,10 @@ window.initNavigation = function () {
   if (sidebarClose) sidebarClose.addEventListener('click', () => { closeSidebar(); navToggle?.classList.remove('active'); });
   if (sidebarOverlay) sidebarOverlay.addEventListener('click', () => { closeSidebar(); navToggle?.classList.remove('active'); });
 
+  document.querySelectorAll('.sidebar-link, .sidebar-sublink').forEach((link) => {
+    link.addEventListener('click', () => { closeSidebar(); navToggle?.classList.remove('active'); });
+  });
+
   dropdowns.forEach((dd) => {
     const btn = dd.querySelector('.dropdown-toggle');
     if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); dd.classList.toggle('active'); });
