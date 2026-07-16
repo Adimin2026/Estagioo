@@ -229,6 +229,52 @@
     </div>
 </footer>`;
 
+  const gameHTML = `
+    <button class="game-fab" id="game-fab" aria-label="Abrir jogo" title="Jogar Hello Kitty">
+        <span class="game-fab-emoji" aria-hidden="true">🎀</span>
+        <span class="game-fab-text">Jogar</span>
+    </button>
+
+    <div class="modal-overlay" id="game-modal" role="dialog" aria-modal="true" aria-label="Jogo Hello Kitty">
+        <div class="modal game-modal">
+            <div class="modal-header game-modal-header">
+                <h3 class="modal-title">🎀 Pegue os Laços da Hello Kitty</h3>
+                <button class="modal-close" id="game-close" aria-label="Fechar jogo" title="Fechar">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body game-modal-body">
+                <div class="game-hud">
+                    <span class="game-stat">⏱️ <b id="game-time">30</b>s</span>
+                    <span class="game-stat">🎯 <b id="game-score">0</b></span>
+                    <span class="game-stat">🏆 <b id="game-best">0</b></span>
+                </div>
+                <div class="game-stage" id="game-stage" aria-label="Área do jogo">
+                    <div class="game-kitty" id="game-kitty" aria-hidden="true">
+                        <svg viewBox="0 0 100 100" width="64" height="64">
+                            <circle cx="50" cy="54" r="40" fill="#fff" stroke="#ff9ec4" stroke-width="3"/>
+                            <circle cx="20" cy="22" r="12" fill="#ff9ec4"/>
+                            <circle cx="80" cy="22" r="12" fill="#ff9ec4"/>
+                            <circle cx="36" cy="50" r="4" fill="#3a2e2e"/>
+                            <circle cx="64" cy="50" r="4" fill="#3a2e2e"/>
+                            <ellipse cx="50" cy="62" rx="4" ry="3" fill="#ff7eb3"/>
+                            <path d="M50 64 Q44 72 38 66 M50 64 Q56 72 62 66" stroke="#ff7eb3" stroke-width="2" fill="none"/>
+                            <path d="M30 60 Q24 70 18 64 M70 60 Q76 70 82 64" stroke="#ffd1e6" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+                </div>
+                <p class="game-tip">Arraste ou toque na Hello Kitty para pegá-la antes que o tempo acabe! 💕</p>
+                <div class="game-over" id="game-over" hidden>
+                    <p class="game-over-msg" id="game-over-msg"></p>
+                    <button class="btn btn-primary" id="game-restart">Jogar de novo</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
   function mount() {
     const hr = document.getElementById('header-root');
     const fr = document.getElementById('footer-root');
@@ -238,6 +284,7 @@
     if (window.initNavigation) window.initNavigation();
     if (window.initThemeToggle) window.initThemeToggle();
     initPWA();
+    if (window.initGame) window.initGame();
   }
 
   function initPWA() {
