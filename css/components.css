@@ -1556,12 +1556,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 14px 22px;
   border: 3px solid #fff;
   border-radius: var(--border-radius-full);
   background: linear-gradient(135deg, #ff5fa2 0%, #ff2e88 100%);
   color: #fff;
-  font-size: var(--font-size-base);
+  font-size: 1.05rem;
   font-weight: var(--font-weight-bold);
   cursor: pointer;
   box-shadow: 0 8px 22px rgba(255, 46, 136, 0.55);
@@ -1571,11 +1571,11 @@
 
 @keyframes gameFabPulse {
   0%, 100% { box-shadow: 0 8px 22px rgba(255, 46, 136, 0.55); }
-  50% { box-shadow: 0 8px 30px rgba(255, 46, 136, 0.9); }
+  50% { box-shadow: 0 8px 34px rgba(255, 46, 136, 0.95); }
 }
 
 .game-fab:hover {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateY(-3px) scale(1.06);
 }
 
 .game-fab:active {
@@ -1583,8 +1583,13 @@
 }
 
 .game-fab-emoji {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   line-height: 1;
+}
+
+.game-fab-label {
+  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 /* Em telas grandes (PC/notebook) o jogo fica maior e bem visível */
@@ -1748,4 +1753,53 @@
 
 @media (max-width: 480px) {
   .game-stage { height: 240px; }
+  .game-fab {
+    right: var(--spacing-sm);
+    bottom: var(--spacing-sm);
+    padding: 12px 16px;
+  }
+  .game-fab-label { font-size: 0.95rem; }
+}
+
+/* Banner de destaque do jogo na home (visível no PC) */
+.game-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin: var(--spacing-xl) 0;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-radius: var(--border-radius-xl);
+  background: linear-gradient(135deg, #ffe3f1 0%, #ffc2dd 100%);
+  border: 2px solid #ff9ec4;
+  box-shadow: var(--shadow-md);
+}
+
+.game-banner-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+  animation: gameFabPulse 1.6s ease-in-out infinite;
+}
+
+.game-banner-text { flex: 1; min-width: 0; }
+.game-banner-text h3 { margin: 0 0 var(--spacing-xs); color: #d63384; font-size: var(--font-size-xl); }
+.game-banner-text p { margin: 0; color: #ad3868; font-size: var(--font-size-sm); line-height: 1.6; }
+
+.game-banner-btn {
+  flex-shrink: 0;
+  background: #ff2e88;
+  border-color: #ff2e88;
+  color: #fff;
+  font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+}
+.game-banner-btn:hover { background: #e6006e; border-color: #e6006e; color: #fff; }
+
+@media (max-width: 640px) {
+  .game-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+  .game-banner-btn { width: 100%; }
 }

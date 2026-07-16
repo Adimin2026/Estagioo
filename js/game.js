@@ -231,6 +231,15 @@ window.initGame = function () {
     });
   }
 
+  // Abrir o jogo a partir do banner da home
+  const homeGameLink = document.getElementById('home-open-game');
+  if (homeGameLink) {
+    homeGameLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      openGame();
+    });
+  }
+
   // Pegar a Hello Kitty (mouse + toque)
   kitty.addEventListener('click', catchKitty);
   kitty.addEventListener('touchstart', (e) => { e.preventDefault(); catchKitty(); }, { passive: false });

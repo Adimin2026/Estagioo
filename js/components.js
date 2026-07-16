@@ -240,8 +240,8 @@
 </footer>`;
 
   const gameHTML = `
-    <button class="game-fab" id="game-fab" aria-label="Abrir jogo" title="Jogar Hello Kitty">
-        <span class="game-fab-text">Jogar</span>
+    <button class="game-fab" id="game-fab" aria-label="Abrir jogo da Hello Kitty" title="Jogar Hello Kitty">
+        <span class="game-fab-label">JOGAR</span>
         <span class="game-fab-emoji" aria-hidden="true">🎀</span>
     </button>
 
