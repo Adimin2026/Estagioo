@@ -94,6 +94,15 @@
                 </a>
             </li>
             <li class="sidebar-item">
+                <a href="#" class="sidebar-link" id="sidebar-open-game">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 7v5l3 3"></path>
+                    </svg>
+                    <span>Entrar no Jogo 🎀</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
                 <a href="pages/estagio-info.html" class="sidebar-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>

@@ -207,6 +207,21 @@ window.initGame = function () {
     });
   }
 
+  // Abrir o jogo a partir do item "Entrar no Jogo" do menu hamburger
+  const sidebarGameLink = document.getElementById('sidebar-open-game');
+  if (sidebarGameLink) {
+    sidebarGameLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      const navToggle = document.querySelector('.nav-toggle');
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      if (navToggle) navToggle.classList.remove('active');
+      openGame();
+    });
+  }
+
   // Pegar a Hello Kitty (mouse + toque)
   kitty.addEventListener('click', catchKitty);
   kitty.addEventListener('touchstart', (e) => { e.preventDefault(); catchKitty(); }, { passive: false });
