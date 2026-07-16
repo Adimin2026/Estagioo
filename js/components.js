@@ -202,6 +202,7 @@
                     <li><a href="pages/guia-estagiario.html">Guia do Estagiário</a></li>
                     <li><a href="pages/professores.html">Professores</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>
+                    <li><a href="#" id="footer-open-game">🎀 Jogar Hello Kitty</a></li>
                 </ul>
             </div>
             <div class="footer-section">

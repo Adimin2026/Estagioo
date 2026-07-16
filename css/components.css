@@ -1550,8 +1550,8 @@
 /* ===== Mini-jogo Hello Kitty ===== */
 .game-fab {
   position: fixed;
-  right: var(--spacing-md);
-  bottom: var(--spacing-md);
+  right: var(--spacing-lg);
+  bottom: var(--spacing-lg);
   z-index: 350;
   display: inline-flex;
   align-items: center;
@@ -1585,6 +1585,33 @@
 .game-fab-emoji {
   font-size: 1.5rem;
   line-height: 1;
+}
+
+/* Em telas grandes (PC/notebook) o jogo fica maior e bem visível */
+@media (min-width: 769px) {
+  .game-fab {
+    right: var(--spacing-xl);
+    bottom: var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+  }
+  .game-fab-emoji {
+    font-size: 1.75rem;
+  }
+  .game-modal {
+    max-width: 34rem;
+  }
+  .game-stage {
+    height: 380px;
+  }
+  .game-kitty {
+    width: 84px;
+    height: 84px;
+  }
+  .game-kitty svg {
+    width: 84px;
+    height: 84px;
+  }
 }
 
 .game-modal {

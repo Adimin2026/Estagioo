@@ -222,6 +222,15 @@ window.initGame = function () {
     });
   }
 
+  // Abrir o jogo a partir do link do rodapé
+  const footerGameLink = document.getElementById('footer-open-game');
+  if (footerGameLink) {
+    footerGameLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      openGame();
+    });
+  }
+
   // Pegar a Hello Kitty (mouse + toque)
   kitty.addEventListener('click', catchKitty);
   kitty.addEventListener('touchstart', (e) => { e.preventDefault(); catchKitty(); }, { passive: false });
