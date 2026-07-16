@@ -723,7 +723,8 @@
   transition: all var(--transition-base);
 }
 
-.modal-overlay.open {
+.modal-overlay.open,
+.modal-overlay.active {
   opacity: 1;
   visibility: visible;
 }
@@ -740,7 +741,8 @@
   transition: all var(--transition-base);
 }
 
-.modal-overlay.open .modal {
+.modal-overlay.open .modal,
+.modal-overlay.active .modal {
   transform: scale(1) translateY(0);
 }
 
