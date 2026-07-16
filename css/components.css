@@ -1552,7 +1552,7 @@
   position: fixed;
   right: var(--spacing-md);
   bottom: var(--spacing-md);
-  z-index: calc(var(--z-index-modal) + 10);
+  z-index: 350;
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);

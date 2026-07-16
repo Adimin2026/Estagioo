@@ -136,6 +136,7 @@
     if (to) to.textContent = 'Responder para: ' + (tip.name || 'Autor') + ' <' + tip.email + '>';
     if (msg) msg.value = '';
     if (status) { status.style.display = 'none'; status.textContent = ''; }
+    if (fab) fab.style.display = 'none';
     if (modal) modal.classList.add('open');
     if (msg) setTimeout(function () { msg.focus(); }, 50);
   }
@@ -143,6 +144,7 @@
   function closeReplyModal() {
     var modal = document.getElementById('reply-modal');
     if (modal) modal.classList.remove('open');
+    if (fab) fab.style.display = '';
     replyId = null;
   }
 

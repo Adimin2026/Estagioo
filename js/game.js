@@ -117,6 +117,7 @@ window.initGame = function () {
   function openGame() {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    if (fab) fab.style.display = 'none';
     getAudio();
     startGame();
   }
@@ -124,6 +125,7 @@ window.initGame = function () {
   function closeGame() {
     modal.classList.remove('active');
     document.body.style.overflow = '';
+    if (fab) fab.style.display = '';
     stopGame();
   }
 
