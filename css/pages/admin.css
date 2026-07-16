@@ -97,3 +97,27 @@
     min-height: 140px;
     resize: vertical;
 }
+
+/* Página do jogo embutido */
+.game-page {
+    max-width: 34rem;
+    margin: 0 auto;
+}
+
+.game-page .game-stage {
+    height: 380px;
+}
+
+.game-page .game-kitty {
+    width: 84px;
+    height: 84px;
+}
+
+.game-page .game-kitty svg {
+    width: 84px;
+    height: 84px;
+}
+
+@media (max-width: 480px) {
+    .game-page .game-stage { height: 280px; }
+}
