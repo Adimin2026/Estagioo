@@ -69,6 +69,18 @@ var staminaEl = $('stamina-bar-fill'), staminaText = $('stamina-text');
 var comboEl = $('combo-display'), dashEl = $('dash-indicator');
 var interactEl = $('interact-hint');
 
+// ===== PROTOCOL CHECK =====
+if (location.protocol === 'file:') {
+  document.getElementById('game-container').innerHTML =
+    '<div style="color:#fff;padding:60px 20px;text-align:center;font-size:18px;font-family:sans-serif;background:#111;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
+    '<div style="font-size:48px;margin-bottom:16px">&#9888;</div>' +
+    '<h2 style="color:#FFD700;margin-bottom:12px">Abra pelo servidor local</h2>' +
+    '<p style="max-width:400px;line-height:1.6">Este jogo precisa ser servido via HTTP para carregar os modelos 3D.</p>' +
+    '<p style="max-width:400px;line-height:1.6">No terminal, execute <code style="background:#333;padding:2px 8px;border-radius:4px">npm run dev</code> na raiz do projeto e acesse a página normalmente.</p>' +
+    '<a href="../index.html" style="margin-top:20px;display:inline-block;padding:12px 24px;background:#FFD700;color:#000;text-decoration:none;border-radius:8px;font-weight:700">Voltar ao Portal</a>' +
+    '</div>';
+}
+
 // ===== AUDIO =====
 var actx = null;
 function initAudio() {
@@ -266,21 +278,53 @@ function startGame() {
     dir = new THREE.Vector3();
     euler = new THREE.Euler(0, 0, 0, 'YXZ');
 
-    buildWorld();
-    setupLights();
-    setupControls();
-    playerArms = createArms();
+    // Show loading
+    var loadingEl = document.createElement('div');
+    loadingEl.id = 'loading-models';
+    loadingEl.style.cssText = 'position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:#FFD700;font-size:14px;font-family:sans-serif;text-shadow:0 0 10px rgba(0,0,0,0.5)';
+    loadingEl.textContent = 'Carregando modelos...';
+    $('game-container').appendChild(loadingEl);
 
-    var names = { free: 'Exploração Livre', night: 'Modo Noturno', time: 'Corrida contra o Tempo' };
-    var descs = { free: 'Colete todas as 15 estrelas sem pressão!', night: 'Mundo escuro. As estrelas brilham mais!', time: 'Você tem 3 minutos!' };
-    startName.innerHTML = names[CFG.mode];
-    startDesc.innerHTML = descs[CFG.mode];
-    startOv.style.display = 'flex';
-    if (CFG.mode === 'time') { timer = CFG.timerMax; timerOn = true; timerEl.style.display = 'inline'; }
-    scoreEl.innerHTML = '&#11088; ' + score + '/' + CFG.total;
-    updateAchDisplay();
-    animate();
-    setTimeout(function() { hintEl.style.opacity = 0; }, 5000);
+    Models.preload({
+      orb: 'models/crystal-cluster.glb',
+      enemy: 'models/scifi-drone.glb',
+      column: 'models/column.glb',
+      machine: 'models/scifi-machine.glb',
+      platform: 'models/platform.glb'
+    }).then(function () {
+      if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+      buildWorld();
+      setupLights();
+      setupControls();
+      playerArms = createArms();
+
+      var names = { free: 'Exploração Livre', night: 'Modo Noturno', time: 'Corrida contra o Tempo' };
+      var descs = { free: 'Colete todas as 15 estrelas sem pressão!', night: 'Mundo escuro. As estrelas brilham mais!', time: 'Você tem 3 minutos!' };
+      startName.innerHTML = names[CFG.mode];
+      startDesc.innerHTML = descs[CFG.mode];
+      startOv.style.display = 'flex';
+      if (CFG.mode === 'time') { timer = CFG.timerMax; timerOn = true; timerEl.style.display = 'inline'; }
+      scoreEl.innerHTML = '&#11088; ' + score + '/' + CFG.total;
+      updateAchDisplay();
+      animate();
+      setTimeout(function() { hintEl.style.opacity = 0; }, 5000);
+    }).catch(function () {
+      if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+      buildWorld();
+      setupLights();
+      setupControls();
+      playerArms = createArms();
+      var names = { free: 'Exploração Livre', night: 'Modo Noturno', time: 'Corrida contra o Tempo' };
+      var descs = { free: 'Colete todas as 15 estrelas sem pressão!', night: 'Mundo escuro. As estrelas brilham mais!', time: 'Você tem 3 minutos!' };
+      startName.innerHTML = names[CFG.mode];
+      startDesc.innerHTML = descs[CFG.mode];
+      startOv.style.display = 'flex';
+      if (CFG.mode === 'time') { timer = CFG.timerMax; timerOn = true; timerEl.style.display = 'inline'; }
+      scoreEl.innerHTML = '&#11088; ' + score + '/' + CFG.total;
+      updateAchDisplay();
+      animate();
+      setTimeout(function() { hintEl.style.opacity = 0; }, 5000);
+    });
   } catch (e) {
     $('game-container').innerHTML = '<div style="color:#f44;padding:40px;text-align:center;font-size:16px">Erro: ' + e.message +
       '<br><br><button onclick="location.reload()" style="padding:10px 24px;background:#FFD700;color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer">Tentar novamente</button></div>';
@@ -337,6 +381,8 @@ function buildWorld() {
     sky.renderOrder = -100;
     scene.add(sky);
   })();
+
+  grasses = []; slimes = []; animals = []; clouds = []; fireflies = []; waterMesh = null;
 
   // ---- CLOUDS ----
   (function() {
@@ -520,43 +566,21 @@ function buildWorld() {
     if (tx * tx + tz * tz < 30) continue;
     if (!canPlace(tx, tz, 1.8)) continue;
     placed.push([tx, tz]);
-    var gr = new THREE.Group(), s = 1.0 + rr(0, 1.8);
-    var th = (0.8 + rr(0, 0.7)) * s;
-    var barkColor = [0x8B6914, 0x6B4914, 0x7B5924, 0x5B3910][ri(0, 3)];
-    var trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.08 * s, 0.16 * s, th, 6), new THREE.MeshStandardMaterial({ color: barkColor, roughness: 0.9 }));
-    trunk.position.y = th / 2; trunk.castShadow = true; gr.add(trunk);
-
-    var leafColors = [0x2d5a27, 0x3a7d44, 0x1e4d1e, 0x4a8c3f, 0x5a9c4f];
-    var lc = leafColors[ri(0, 4)];
-    var lMat = new THREE.MeshStandardMaterial({ color: lc, roughness: 0.8, flatShading: true });
-
-    var cr = (0.4 + rr(0, 0.4)) * s, ch = (0.6 + rr(0, 0.5)) * s;
-    var canopy1 = new THREE.Mesh(new THREE.ConeGeometry(cr, ch, ri(6, 8)), lMat);
-    canopy1.position.y = th + ch * 0.3; canopy1.castShadow = true; gr.add(canopy1);
-
-    var cr2 = cr * (0.6 + rr(0, 0.2)), ch2 = ch * (0.5 + rr(0, 0.2));
-    var canopy2 = new THREE.Mesh(new THREE.ConeGeometry(cr2, ch2, ri(5, 7)), lMat);
-    canopy2.position.set(rr(-0.3, 0.3) * s, th + ch * 0.2 + ch2 * 0.3, rr(-0.3, 0.3) * s);
-    canopy2.castShadow = true; gr.add(canopy2);
-
-    var cr3 = cr * 0.5, ch3 = ch * 0.4;
-    var canopy3 = new THREE.Mesh(new THREE.ConeGeometry(cr3, ch3, 5), lMat);
-    canopy3.position.set(0, th + ch * 0.5 + ch3 * 0.4, 0);
-    canopy3.castShadow = true; gr.add(canopy3);
-
+    var gr = Models.createDetailedTree({ scale: 1.0 + rr(0, 1.8) });
     gr.position.set(tx, getHeight(tx, tz), tz);
     gr.rotation.y = sr() * 6.28;
+    gr.scale.set(1, 1, 1);
     scene.add(gr);
     trees.push(gr);
   }
 
-  // ---- HOUSES (with windows and doors) ----
+  // ---- HOUSES (big — larger than the player) ----
   for (var hi = 0; hi < 10; hi++) {
     var hx = rr(-70, 70), hz = rr(-70, 70);
-    if (hx * hx + hz * hz < 36 || !canPlace(hx, hz, 4)) continue;
+    if (hx * hx + hz * hz < 36 || !canPlace(hx, hz, 7)) continue;
     placed.push([hx, hz]);
     var gr2 = new THREE.Group();
-    var w = 1.5 + rr(0, 0.5), h = 0.8 + rr(0, 0.4), d = 1.5 + rr(0, 0.5);
+    var w = 4.0 + rr(0, 1.5), h = 2.5 + rr(0, 1.0), d = 4.0 + rr(0, 1.5);
     var wc = [0xDEB887, 0xF5DEB3, 0xD2B48C, 0xE8D5B7][ri(0, 3)];
     var rc = [0x8B4513, 0xA0522D, 0xCD853F, 0xBC8F8F][ri(0, 3)];
     var roofC = new THREE.MeshStandardMaterial({ color: rc, roughness: 0.7 });
@@ -565,18 +589,18 @@ function buildWorld() {
     var walls = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallC);
     walls.position.y = h / 2; walls.castShadow = true; walls.receiveShadow = true; gr2.add(walls);
 
-    var roofH = h * 0.5 + rr(0, 0.1);
-    var roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.75, roofH, 4), roofC);
-    roof.position.y = h + roofH * 0.3; roof.rotation.y = Math.PI / 4; roof.castShadow = true; gr2.add(roof);
+    var roofH = h * 0.6 + rr(0, 0.15);
+    var roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 1.0, roofH, 4), roofC);
+    roof.position.y = h + roofH * 0.2; roof.rotation.y = Math.PI / 4; roof.castShadow = true; gr2.add(roof);
 
     var winMat = new THREE.MeshStandardMaterial({ color: 0x1a2a4a, emissive: 0x1a2a4a, emissiveIntensity: 0.2 });
-    var winW = w * 0.18, winH = h * 0.25;
+    var winW = w * 0.18, winH = h * 0.2;
     var win1 = new THREE.Mesh(new THREE.PlaneGeometry(winW, winH), winMat);
-    win1.position.set(w * 0.15, h * 0.45, d / 2 + 0.005); gr2.add(win1);
+    win1.position.set(w * 0.2, h * 0.45, d / 2 + 0.005); gr2.add(win1);
     var win2 = new THREE.Mesh(new THREE.PlaneGeometry(winW, winH), winMat);
-    win2.position.set(-w * 0.15, h * 0.45, d / 2 + 0.005); gr2.add(win2);
-    var door = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.12, h * 0.55), new THREE.MeshStandardMaterial({ color: 0x5a3a1a }));
-    door.position.set(0, h * 0.2, d / 2 + 0.005); gr2.add(door);
+    win2.position.set(-w * 0.2, h * 0.45, d / 2 + 0.005); gr2.add(win2);
+    var door = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.14, h * 0.5), new THREE.MeshStandardMaterial({ color: 0x5a3a1a }));
+    door.position.set(0, h * 0.18, d / 2 + 0.005); gr2.add(door);
 
     if (CFG.mode === 'night') {
       var wlMat = new THREE.MeshStandardMaterial({ color: 0xffdd44, emissive: 0xffaa00, emissiveIntensity: 0.3 });
@@ -605,6 +629,36 @@ function buildWorld() {
     rRock.scale.y = rr(0.4, 1.2);
     rRock.castShadow = true; rRock.receiveShadow = true;
     scene.add(rRock);
+  }
+
+  // ---- DOWNLOADED MODEL DECORATIONS (column, machine) ----
+  if (Models.cache.column) {
+    for (var di = 0; di < 12; di++) {
+      var dx2 = rr(-80, 80), dz2 = rr(-80, 80);
+      if (dx2 * dx2 + dz2 * dz2 < 30 || !canPlace(dx2, dz2, 3)) continue;
+      placed.push([dx2, dz2]);
+      var col = Models.cache.column.clone();
+      var colScale = 0.3 + rr(0, 0.2);
+      col.scale.set(colScale, colScale, colScale);
+      col.position.set(dx2, getHeight(dx2, dz2), dz2);
+      col.rotation.y = rr(0, 6.28);
+      col.traverse(function (c) { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+      scene.add(col);
+    }
+  }
+  if (Models.cache.machine) {
+    for (var mi3 = 0; mi3 < 4; mi3++) {
+      var mx2 = rr(-60, 60), mz2 = rr(-60, 60);
+      if (mx2 * mx2 + mz2 * mz2 < 30 || !canPlace(mx2, mz2, 4)) continue;
+      placed.push([mx2, mz2]);
+      var mach = Models.cache.machine.clone();
+      var machScale = 0.15 + rr(0, 0.1);
+      mach.scale.set(machScale, machScale, machScale);
+      mach.position.set(mx2, getHeight(mx2, mz2), mz2);
+      mach.rotation.y = rr(0, 6.28);
+      mach.traverse(function (c) { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+      scene.add(mach);
+    }
   }
 
   // ---- GRASS SPRITES ----
@@ -681,12 +735,15 @@ function buildWorld() {
     placed.push([ox, oz]);
 
     var oy = getHeight(ox, oz) + 0.6 + rr(0, 0.5);
-    var eColor = CFG.mode === 'night' ? 0x44ddff : 0xFFA500;
-    var eInt = CFG.mode === 'night' ? 0.8 : 0.4;
-    var orb = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), new THREE.MeshStandardMaterial({
-      color: 0xFFD700, emissive: eColor, emissiveIntensity: eInt, roughness: 0.2, metalness: 0.3
-    }));
-    orb.position.set(ox, oy, oz); orb.castShadow = true;
+    var crystal;
+    if (Models.cache.orb) {
+      crystal = Models.cache.orb.clone();
+      crystal.scale.set(0.15, 0.15, 0.15);
+      crystal.position.y += 0.1;
+    } else {
+      crystal = Models.createCrystalOrb();
+    }
+    crystal.position.set(ox, oy, oz);
 
     var glowR = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.55, 16), new THREE.MeshBasicMaterial({
       color: 0xFFD700, transparent: true, opacity: CFG.mode === 'night' ? 0.5 : 0.25, side: THREE.DoubleSide
@@ -700,32 +757,35 @@ function buildWorld() {
     beam.position.set(ox, beamH / 2 - 0.15, oz);
 
     var pulsePhase = sr() * 6.28;
-    scene.add(orb); scene.add(glowR); scene.add(beam);
-    orbs.push({ orb: orb, glow: glowR, beam: beam, col: false, x: ox, z: oz, y: oy, pulsePhase: pulsePhase });
+    scene.add(crystal); scene.add(glowR); scene.add(beam);
+    orbs.push({ orb: crystal, glow: glowR, beam: beam, col: false, x: ox, z: oz, y: oy, pulsePhase: pulsePhase });
     orbCount++;
   }
 
   // ---- ENEMIES (Slimes) ----
   if (CFG.mode !== 'time') {
     (function() {
-      var slimeMat = new THREE.MeshStandardMaterial({ color: 0x66cc44, roughness: 0.6, flatShading: true });
-      var slimeMat2 = new THREE.MeshStandardMaterial({ color: 0xcc5555, roughness: 0.6, flatShading: true });
-      var slimeMat3 = new THREE.MeshStandardMaterial({ color: 0x5599cc, roughness: 0.6, flatShading: true });
-      var smats = [slimeMat, slimeMat2, slimeMat3];
       for (var si = 0; si < 8; si++) {
         var sx = rr(-70, 70), sz = rr(-70, 70);
         if (sx * sx + sz * sz < 40) continue;
-        var sh = getHeight(sx, sz) + 0.3;
-        var body = new THREE.Mesh(new THREE.SphereGeometry(0.35 + rr(0, 0.15), 8, 8), smats[ri(0, 2)]);
-        body.position.set(sx, sh, sz);
-        body.castShadow = true;
+        var sh2 = getHeight(sx, sz) + 0.3;
+        var body;
+        if (Models.cache.enemy) {
+          body = Models.cache.enemy.clone();
+          body.scale.set(0.12, 0.12, 0.12);
+          body.rotation.y = rr(0, 6.28);
+        } else {
+          body = Models.createSlime(1 + rr(0, 0.4));
+        }
+        body.position.set(sx, sh2, sz);
         body.userData = {
-          homeX: sx, homeZ: sz, homeY: sh,
+          homeX: sx, homeZ: sz, homeY: sh2,
           targetX: sx + rr(-10, 10), targetZ: sz + rr(-10, 10),
           speed: 1 + rr(0, 1.5),
           phase: rr(0, 6.28),
           radius: 0.35 + rr(0, 0.15),
-          alive: true, respawnTimer: 0
+          alive: true, respawnTimer: 0,
+          procedural: !Models.cache.enemy
         };
         scene.add(body);
         slimes.push(body);
@@ -1464,11 +1524,14 @@ function animate() {
           sl.position.x += (dx / dd) * sl.userData.speed * dt * 0.5;
           sl.position.z += (dz / dd) * sl.userData.speed * dt * 0.5;
         }
-        sl.position.y = getHeight(sl.position.x, sl.position.z) + 0.3 + Math.sin(time * sl.userData.speed + sl.userData.phase) * 0.1;
-        var sq = Math.sin(time * sl.userData.speed + sl.userData.phase);
-        sl.scale.y = 1 + sq * 0.15;
-        sl.scale.x = 1 - sq * 0.08;
-        sl.scale.z = 1 - sq * 0.08;
+        var baseY = sl.userData.procedural ? 0.3 : 1.0;
+        sl.position.y = getHeight(sl.position.x, sl.position.z) + baseY + Math.sin(time * sl.userData.speed + sl.userData.phase) * 0.3;
+        if (sl.userData.procedural) {
+          var sq = Math.sin(time * sl.userData.speed + sl.userData.phase);
+          sl.scale.y = 1 + sq * 0.15;
+          sl.scale.x = 1 - sq * 0.08;
+          sl.scale.z = 1 - sq * 0.08;
+        }
 
         if (sd < 2 && invincible <= 0 && sl.userData.alive) {
           score = Math.max(0, score - 1);

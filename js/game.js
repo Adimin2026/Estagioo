@@ -1,6 +1,8 @@
-window.initGame = function () {
+window.initGame = function (opts) {
+  opts = opts || {};
   if (document.documentElement.dataset.gameInit === 'true') return;
   document.documentElement.dataset.gameInit = 'true';
+  if (opts.autoStart) document.documentElement.dataset.gamePageInit = 'true';
 
   var fab = document.getElementById('game-fab');
   var modal = document.getElementById('game-modal');
@@ -16,7 +18,9 @@ window.initGame = function () {
 
   if (!modal || !stage) return;
 
-  // Timer bar
+  // Timer bar — remove old if exists
+  var oldBar = stage.parentNode.querySelector('.game-timer-bar');
+  if (oldBar) oldBar.remove();
   var timerBar = document.createElement('div');
   timerBar.className = 'game-timer-bar';
   var timerFill = document.createElement('div');
@@ -46,6 +50,7 @@ window.initGame = function () {
   var timer = null;
   var rafId = null;
   var running = false;
+  var paused = false;
   var animTime = 0;
   var kittyPop = 0;
   var scorePopups = [];
@@ -79,6 +84,8 @@ window.initGame = function () {
     o.connect(g).connect(a.destination);
     o.start(); o.stop(a.currentTime + d);
   }
+  function sndOpen() { beep(660, 0.08, 'sine', 0.15); setTimeout(function() { beep(880, 0.08, 'sine', 0.15); }, 70); }
+  function sndClose() { beep(440, 0.1, 'sine', 0.12); }
   function sndCatch() { beep(880, 0.12, 'triangle', 0.2); setTimeout(function() { beep(1320, 0.12, 'triangle', 0.18); }, 90); }
   function sndOver() {
     beep(660, 0.18, 'sine', 0.2);
@@ -412,9 +419,23 @@ window.initGame = function () {
     };
   }
 
+  function togglePause() {
+    if (!running) return;
+    paused = !paused;
+    if (!paused) {
+      lastTs = 0;
+      rafId = requestAnimationFrame(loop);
+    }
+  }
+
   // Game loop
   function loop(ts) {
     if (!running) return;
+    if (paused) {
+      drawPauseOverlay();
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
     if (!lastTs) lastTs = ts;
     var dt = Math.min(0.04, (ts - lastTs) / 1000);
     lastTs = ts;
@@ -438,7 +459,7 @@ window.initGame = function () {
     if (kittyPop > 0) kittyPop -= dt * 4;
 
     var kx = kittyX + 32;
-    var ky = kittyY + 32;
+    var ky = kittyY + 32 + Math.sin(animTime * 3) * 2;
     drawKitty(kx, ky, 32);
 
     updateParticles(dt);
@@ -449,10 +470,24 @@ window.initGame = function () {
     rafId = requestAnimationFrame(loop);
   }
 
+  function drawPauseOverlay() {
+    var b = resizeCanvas();
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, 0, b.w, b.h);
+    ctx.fillStyle = '#FFF';
+    ctx.font = 'bold 28px "Segoe UI", Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSADO', b.w / 2, b.h / 2 - 10);
+    ctx.font = '14px "Segoe UI", Arial, sans-serif';
+    ctx.fillText('Pressione ESC para continuar', b.w / 2, b.h / 2 + 22);
+  }
+
   function startMove() {
     var b = getBounds();
-    kittyX = 12 + Math.random() * Math.max(1, b.w - 12);
-    kittyY = 12 + Math.random() * Math.max(1, b.h - 12);
+    kittyX = Math.random() * Math.max(1, b.w - 10);
+    kittyY = Math.random() * Math.max(1, b.h - 10);
+    kittyX = Math.max(0, Math.min(kittyX, b.w));
+    kittyY = Math.max(0, Math.min(kittyY, b.h));
     var speed = 40 + Math.random() * 30;
     var ang = Math.random() * Math.PI * 2;
     kittyVX = Math.cos(ang) * speed;
@@ -466,18 +501,20 @@ window.initGame = function () {
   }
 
   function openGame() {
-    modal.classList.add('active');
+    if (modal) modal.classList.add('active');
     document.body.style.overflow = 'hidden';
     if (fab) fab.style.display = 'none';
     getAudio();
+    sndOpen();
     initScene();
     startGame();
   }
 
   function closeGame() {
-    modal.classList.remove('active');
+    if (modal) modal.classList.remove('active');
     document.body.style.overflow = '';
     if (fab) fab.style.display = '';
+    sndClose();
     stopGame();
   }
 
@@ -533,10 +570,12 @@ window.initGame = function () {
     var rect = canvas.getBoundingClientRect();
     var cx = kittyX + 32, cy = kittyY + 32;
     var s = 32;
-    var pt = e.touches ? e.touches[0] : e;
+    var isTouch = !!e.touches;
+    var pt = isTouch ? e.touches[0] : e;
     var mx = pt.clientX - rect.left;
     var my = pt.clientY - rect.top;
-    if (Math.abs(mx - cx) > s * 0.6 || Math.abs(my - cy) > s * 0.6) return;
+    var hitR = isTouch ? s * 1.0 : s * 0.6;
+    if (Math.abs(mx - cx) > hitR || Math.abs(my - cy) > hitR) return;
 
     score += 1;
     scoreEl.textContent = score;
@@ -546,8 +585,10 @@ window.initGame = function () {
     spawnScorePopup(cx, cy);
 
     var b = getBounds();
-    kittyX = 12 + Math.random() * Math.max(1, b.w - 12);
-    kittyY = 12 + Math.random() * Math.max(1, b.h - 12);
+    kittyX = Math.random() * Math.max(1, b.w - 10);
+    kittyY = Math.random() * Math.max(1, b.h - 10);
+    kittyX = Math.max(0, Math.min(kittyX, b.w));
+    kittyY = Math.max(0, Math.min(kittyY, b.h));
     var speed = 50 + Math.random() * 40;
     var ang = Math.random() * Math.PI * 2;
     kittyVX = Math.cos(ang) * speed;
@@ -556,12 +597,18 @@ window.initGame = function () {
 
   // Events
   if (fab) fab.addEventListener('click', openGame);
-  closeBtn.addEventListener('click', closeGame);
-  modal.addEventListener('click', function(e) { if (e.target === modal) closeGame(); });
+  if (closeBtn) closeBtn.addEventListener('click', closeGame);
+  if (modal) modal.addEventListener('click', function(e) { if (e.target === modal) closeGame(); });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.classList.contains('active')) closeGame();
+    if (e.key === 'Escape') {
+      if (modal && modal.classList.contains('active')) {
+        closeGame();
+      } else if (running) {
+        togglePause();
+      }
+    }
   });
-  restartBtn.addEventListener('click', startGame);
+  if (restartBtn) restartBtn.addEventListener('click', startGame);
 
   if (menuBtn) {
     menuBtn.addEventListener('click', function() {
@@ -648,4 +695,10 @@ window.initGame = function () {
   window.addEventListener('resize', function() {
     // Canvas gets resized on next frame via resizeCanvas()
   });
+
+  if (opts.autoStart) {
+    getAudio();
+    initScene();
+    startGame();
+  }
 };
