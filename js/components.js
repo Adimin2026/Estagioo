@@ -301,6 +301,10 @@
     if (hr) hr.innerHTML = headerHTML;
     if (fr) fr.innerHTML = footerHTML;
 
+    const gc = document.createElement('div');
+    gc.innerHTML = gameHTML;
+    while (gc.firstChild) document.body.appendChild(gc.firstChild);
+
     if (window.initNavigation) window.initNavigation();
     if (window.initThemeToggle) window.initThemeToggle();
     initPWA();

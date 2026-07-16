@@ -1675,17 +1675,38 @@
   color: #d63384;
 }
 
+#game-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+  touch-action: none;
+}
+
 .game-stage {
   position: relative;
   width: 100%;
   height: 280px;
   border-radius: var(--border-radius-lg);
-  background:
-    repeating-linear-gradient(45deg, rgba(255, 158, 196, 0.06) 0 12px, transparent 12px 24px),
-    var(--color-bg-secondary);
-  border: 2px dashed #ffb3d4;
+  background: #87CEEB;
   overflow: hidden;
   touch-action: none;
+}
+
+.game-timer-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.game-timer-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #44cc44, #ffcc00, #ff4444);
+  transition: width 1s linear;
 }
 
 .game-kitty {

@@ -1,118 +1,468 @@
-// Mini-jogo "Pegue os Laços da Hello Kitty" (tema Hello Kitty).
-// A Hello Kitty se move sozinha pela área; clique/toque nela para pontuar
-// antes do tempo acabar. Recorde salvo no localStorage. Sons via WebAudio.
 window.initGame = function () {
   if (document.documentElement.dataset.gameInit === 'true') return;
   document.documentElement.dataset.gameInit = 'true';
 
-  const fab = document.getElementById('game-fab');
-  const modal = document.getElementById('game-modal');
-  const closeBtn = document.getElementById('game-close');
-  const stage = document.getElementById('game-stage');
-  const kitty = document.getElementById('game-kitty');
-  const timeEl = document.getElementById('game-time');
-  const scoreEl = document.getElementById('game-score');
-  const bestEl = document.getElementById('game-best');
-  const overEl = document.getElementById('game-over');
-  const overMsg = document.getElementById('game-over-msg');
-  const restartBtn = document.getElementById('game-restart');
-  const menuBtn = document.getElementById('game-menu');
+  var fab = document.getElementById('game-fab');
+  var modal = document.getElementById('game-modal');
+  var closeBtn = document.getElementById('game-close');
+  var stage = document.getElementById('game-stage');
+  var timeEl = document.getElementById('game-time');
+  var scoreEl = document.getElementById('game-score');
+  var bestEl = document.getElementById('game-best');
+  var overEl = document.getElementById('game-over');
+  var overMsg = document.getElementById('game-over-msg');
+  var restartBtn = document.getElementById('game-restart');
+  var menuBtn = document.getElementById('game-menu');
 
-  if (!fab || !modal || !stage || !kitty) return;
+  if (!fab || !modal || !stage) return;
 
-  const BEST_KEY = 'hkGameBest';
-  const DURATION = 30;
-  let timeLeft = DURATION;
-  let score = 0;
-  let best = parseInt(localStorage.getItem(BEST_KEY) || '0', 10) || 0;
-  let timer = null;
-  let rafId = null;
-  let running = false;
+  // Timer bar
+  var timerBar = document.createElement('div');
+  timerBar.className = 'game-timer-bar';
+  var timerFill = document.createElement('div');
+  timerFill.className = 'game-timer-fill';
+  timerFill.id = 'game-timer-fill';
+  timerBar.appendChild(timerFill);
+  stage.parentNode.insertBefore(timerBar, stage);
+
+  // Setup canvas
+  stage.style.position = 'relative';
+  stage.style.overflow = 'hidden';
+  var canvas = document.createElement('canvas');
+  canvas.id = 'game-canvas';
+  canvas.style.display = 'block';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  var kittyDiv = stage.querySelector('#game-kitty');
+  if (kittyDiv) kittyDiv.remove();
+  stage.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+
+  var BEST_KEY = 'hkGameBest';
+  var DURATION = 30;
+  var timeLeft = DURATION;
+  var score = 0;
+  var best = parseInt(localStorage.getItem(BEST_KEY) || '0', 10) || 0;
+  var timer = null;
+  var rafId = null;
+  var running = false;
+  var animTime = 0;
+  var kittyPop = 0;
+  var scorePopups = [];
+  var particles = [];
+  var clouds = [];
+  var flowers = [];
+  var dragging = false;
+  var dragOffX = 0, dragOffY = 0;
+  var lastTs = 0;
+  var kittyX = 12, kittyY = 12;
+  var kittyVX = 2.4, kittyVY = 1.8;
 
   bestEl.textContent = best;
 
-  // ---- Sons (WebAudio, sem arquivos externos) ----
-  let audioCtx = null;
+  // Audio
+  var actx = null;
   function getAudio() {
-    if (!audioCtx) {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) audioCtx = new AC();
+    if (!actx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) actx = new AC();
     }
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    return audioCtx;
+    if (actx && actx.state === 'suspended') actx.resume();
+    return actx;
   }
-  function beep(freq, dur, type, vol) {
-    const ctx = getAudio();
-    if (!ctx) return;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type || 'sine';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol || 0.18, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + dur);
+  function beep(f, d, t, v) {
+    var a = getAudio(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = t || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(v || 0.18, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + d);
+    o.connect(g).connect(a.destination);
+    o.start(); o.stop(a.currentTime + d);
   }
-  function soundCatch() { beep(880, 0.12, 'triangle', 0.2); setTimeout(() => beep(1320, 0.12, 'triangle', 0.18), 90); }
-  function soundOver() {
+  function sndCatch() { beep(880, 0.12, 'triangle', 0.2); setTimeout(function() { beep(1320, 0.12, 'triangle', 0.18); }, 90); }
+  function sndOver() {
     beep(660, 0.18, 'sine', 0.2);
-    setTimeout(() => beep(523, 0.18, 'sine', 0.2), 160);
-    setTimeout(() => beep(392, 0.28, 'sine', 0.2), 320);
+    setTimeout(function() { beep(523, 0.18, 'sine', 0.2); }, 160);
+    setTimeout(function() { beep(392, 0.28, 'sine', 0.2); }, 320);
   }
 
-  // ---- Movimento da Hello Kitty ----
-  const pos = { x: 12, y: 12 };
-  const vel = { x: 2.4, y: 1.8 };
-  let last = 0;
+  // Resize
+  function resizeCanvas() {
+    var r = stage.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = r.width * dpr;
+    canvas.height = r.height * dpr;
+    canvas.style.width = r.width + 'px';
+    canvas.style.height = r.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { w: r.width, h: r.height };
+  }
 
-  function stageBounds() {
-    const kw = kitty.offsetWidth || 64;
-    const kh = kitty.offsetHeight || 64;
+  // Scene objects
+  function initScene() {
+    clouds = [];
+    for (var ci = 0; ci < 4; ci++) {
+      clouds.push({
+        x: Math.random() * 600 - 100, y: 15 + Math.random() * 30,
+        w: 50 + Math.random() * 80, h: 15 + Math.random() * 15, spd: 0.1 + Math.random() * 0.2
+      });
+    }
+    flowers = [];
+    for (var fi = 0; fi < 12; fi++) {
+      flowers.push({
+        x: 20 + Math.random() * 260, y: 80 + Math.random() * 200,
+        color: ['#FF69B4','#FFD700','#FF6347','#DA70D6','#FF1493','#FFA500'][Math.floor(Math.random() * 6)],
+        size: 3 + Math.random() * 4
+      });
+    }
+  }
+
+  // Draw functions
+  function drawBackground(bw, bh) {
+    // Sky gradient
+    var sky = ctx.createLinearGradient(0, 0, 0, bh * 0.55);
+    sky.addColorStop(0, '#87CEEB');
+    sky.addColorStop(0.6, '#B0E0FF');
+    sky.addColorStop(1, '#E8F8FF');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, bw, bh);
+
+    // Clouds
+    clouds.forEach(function(c) {
+      c.x += c.spd;
+      if (c.x > bw + 100) c.x = -c.w - 20;
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, c.w * 0.5, c.h * 0.5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(c.x - c.w * 0.25, c.y + 3, c.w * 0.3, c.h * 0.35, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(c.x + c.w * 0.25, c.y + 2, c.w * 0.3, c.h * 0.35, 0, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Grass
+    var grd = ctx.createLinearGradient(0, bh * 0.5, 0, bh);
+    grd.addColorStop(0, '#7CCD4A');
+    grd.addColorStop(0.3, '#6BBF3A');
+    grd.addColorStop(1, '#4A9A2A');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, bh * 0.5, bw, bh * 0.5);
+
+    // Grass blades
+    ctx.strokeStyle = 'rgba(50,120,30,0.3)';
+    ctx.lineWidth = 1.5;
+    for (var gi = 0; gi < 40; gi++) {
+      var gx = (gi / 40) * bw + Math.sin(gi * 3) * 5;
+      var gy = bh * 0.5 + 5 + Math.sin(gi * 7) * 10;
+      ctx.beginPath();
+      ctx.moveTo(gx, bh);
+      ctx.quadraticCurveTo(gx + Math.sin(animTime + gi) * 3, bh - 8 - Math.random() * 6, gx + Math.sin(animTime * 0.7 + gi * 2) * 2, bh * 0.5 + 5 + Math.random() * 8);
+      ctx.stroke();
+    }
+
+    // Fence
+    ctx.strokeStyle = '#DEB887';
+    ctx.lineWidth = 3;
+    var fy = bh - 20;
+    ctx.beginPath();
+    ctx.moveTo(0, fy); ctx.lineTo(bw, fy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, fy - 18); ctx.lineTo(bw, fy - 18);
+    ctx.stroke();
+    ctx.fillStyle = '#DEB887';
+    for (var pi = 0; pi < 20; pi++) {
+      var px = pi * (bw / 19);
+      ctx.fillRect(px - 2, fy - 28, 4, 34);
+      ctx.strokeRect(px - 2, fy - 28, 4, 34);
+    }
+
+    // Flowers
+    flowers.forEach(function(f) {
+      ctx.fillStyle = '#2D8A2D';
+      ctx.beginPath();
+      ctx.moveTo(f.x, f.y + 8);
+      ctx.lineTo(f.x - 2, f.y);
+      ctx.lineTo(f.x + 2, f.y);
+      ctx.fill();
+      ctx.fillStyle = f.color;
+      var fs = f.size;
+      for (var p = 0; p < 5; p++) {
+        var a = (p / 5) * Math.PI * 2 - Math.PI / 2;
+        ctx.beginPath();
+        ctx.arc(f.x + Math.cos(a) * fs, f.y + Math.sin(a) * fs, fs * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, fs * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawKitty(x, y, s) {
+    s = s || 1;
+    var pop = kittyPop > 0 ? 1 + kittyPop * 0.5 : 1;
+    var rotY = kittyPop > 0 ? kittyPop * 0.3 : Math.sin(animTime * 3) * 0.05;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(pop, pop);
+    ctx.rotate(rotY);
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 0.55, s * 0.4, s * 0.08, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body/dress
+    ctx.fillStyle = '#FFB6C1';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 0.45, s * 0.3, s * 0.35, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#F08AAD';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Head
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(0, -s * 0.05, s * 0.37, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#DDD';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Left ear
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.22, -s * 0.28);
+    ctx.lineTo(-s * 0.14, -s * 0.48);
+    ctx.lineTo(-s * 0.04, -s * 0.28);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#FFB6C1';
+    ctx.beginPath();
+    ctx.moveTo(-s * 0.19, -s * 0.30);
+    ctx.lineTo(-s * 0.14, -s * 0.43);
+    ctx.lineTo(-s * 0.08, -s * 0.30);
+    ctx.fill();
+
+    // Right ear
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(s * 0.04, -s * 0.28);
+    ctx.lineTo(s * 0.14, -s * 0.48);
+    ctx.lineTo(s * 0.22, -s * 0.28);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#FFB6C1';
+    ctx.beginPath();
+    ctx.moveTo(s * 0.08, -s * 0.30);
+    ctx.lineTo(s * 0.14, -s * 0.43);
+    ctx.lineTo(s * 0.19, -s * 0.30);
+    ctx.fill();
+
+    // Bow on right ear
+    ctx.fillStyle = '#FF2E88';
+    // Left loop
+    ctx.beginPath();
+    ctx.ellipse(s * 0.08, -s * 0.48, s * 0.12, s * 0.06, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Right loop
+    ctx.beginPath();
+    ctx.ellipse(s * 0.20, -s * 0.48, s * 0.12, s * 0.06, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Center
+    ctx.fillStyle = '#D6246E';
+    ctx.beginPath();
+    ctx.arc(s * 0.14, -s * 0.48, s * 0.04, 0, Math.PI * 2);
+    ctx.fill();
+    // Tails
+    ctx.strokeStyle = '#FF2E88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(s * 0.14, -s * 0.44);
+    ctx.lineTo(s * 0.10, -s * 0.38);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(s * 0.14, -s * 0.44);
+    ctx.lineTo(s * 0.18, -s * 0.38);
+    ctx.stroke();
+
+    // Eyes
+    ctx.fillStyle = '#333';
+    ctx.beginPath();
+    ctx.ellipse(-s * 0.12, -s * 0.04, s * 0.04, s * 0.05, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(s * 0.12, -s * 0.04, s * 0.04, s * 0.05, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Eye shine
+    ctx.fillStyle = '#FFF';
+    ctx.beginPath();
+    ctx.arc(-s * 0.10, -s * 0.06, s * 0.015, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(s * 0.14, -s * 0.06, s * 0.015, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Nose
+    ctx.fillStyle = '#FFB347';
+    ctx.beginPath();
+    ctx.ellipse(0, s * 0.02, s * 0.03, s * 0.02, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Whiskers
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    [-1, 1].forEach(function(side) {
+      var sx = side * s * 0.13;
+      for (var wi = 0; wi < 3; wi++) {
+        ctx.beginPath();
+        ctx.moveTo(sx, s * 0.01 + wi * s * 0.04);
+        ctx.lineTo(sx + side * s * (0.15 + wi * 0.02), s * (-0.02 + wi * s * 0.03));
+        ctx.stroke();
+      }
+    });
+
+    // Mouth
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, s * 0.07, s * 0.04, 0.15, Math.PI - 0.15);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function spawnParticles(x, y) {
+    for (var pi = 0; pi < 10; pi++) {
+      var a = Math.random() * Math.PI * 2;
+      var spd = 20 + Math.random() * 40;
+      particles.push({
+        x: x, y: y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd - 30,
+        life: 0.6 + Math.random() * 0.4, maxLife: 1,
+        size: 2 + Math.random() * 4,
+        color: ['#FFD700','#FF69B4','#FFF','#FFA500','#FF1493'][Math.floor(Math.random() * 5)]
+      });
+    }
+  }
+
+  function spawnScorePopup(x, y) {
+    scorePopups.push({
+      x: x, y: y - 20, text: '+1', life: 1, vy: -40
+    });
+  }
+
+  function updateParticles(dt) {
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vy += 120 * dt;
+      p.life -= dt;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function drawParticles() {
+    particles.forEach(function(p) {
+      var a = p.life / p.maxLife;
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * a, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function updatePopups(dt) {
+    for (var i = scorePopups.length - 1; i >= 0; i--) {
+      var p = scorePopups[i];
+      p.y += p.vy * dt;
+      p.life -= dt;
+      if (p.life <= 0) scorePopups.splice(i, 1);
+    }
+  }
+
+  function drawPopups() {
+    scorePopups.forEach(function(p) {
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = '#FF2E88';
+      ctx.font = 'bold 18px "Segoe UI", Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.text, p.x, p.y);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  // Bounds
+  function getBounds() {
+    var kw = 64;
+    var kh = 64;
     return {
-      w: Math.max(0, stage.clientWidth - kw),
-      h: Math.max(0, stage.clientHeight - kh)
+      w: Math.max(0, canvas.width / (window.devicePixelRatio || 1) - kw),
+      h: Math.max(0, canvas.height / (window.devicePixelRatio || 1) - kh)
     };
   }
 
+  // Game loop
   function loop(ts) {
     if (!running) return;
-    if (!last) last = ts;
-    const dt = Math.min(40, ts - last);
-    last = ts;
+    if (!lastTs) lastTs = ts;
+    var dt = Math.min(0.04, (ts - lastTs) / 1000);
+    lastTs = ts;
+    animTime += dt;
+
+    var b = resizeCanvas();
+    var bw = b.w, bh = b.h;
+
+    drawBackground(bw, bh);
 
     if (!dragging) {
-      const b = stageBounds();
-      pos.x += vel.x * (dt / 16);
-      pos.y += vel.y * (dt / 16);
-      if (pos.x <= 0) { pos.x = 0; vel.x = Math.abs(vel.x); }
-      if (pos.y <= 0) { pos.y = 0; vel.y = Math.abs(vel.y); }
-      if (pos.x >= b.w) { pos.x = b.w; vel.x = -Math.abs(vel.x); }
-      if (pos.y >= b.h) { pos.y = b.h; vel.y = -Math.abs(vel.y); }
-      kitty.style.left = pos.x + 'px';
-      kitty.style.top = pos.y + 'px';
+      kittyX += kittyVX * (dt * 60);
+      kittyY += kittyVY * (dt * 60);
+      var kb = getBounds();
+      if (kittyX <= 0) { kittyX = 0; kittyVX = Math.abs(kittyVX); }
+      if (kittyY <= 0) { kittyY = 0; kittyVY = Math.abs(kittyVY); }
+      if (kittyX >= kb.w) { kittyX = kb.w; kittyVX = -Math.abs(kittyVX); }
+      if (kittyY >= kb.h) { kittyY = kb.h; kittyVY = -Math.abs(kittyVY); }
     }
+
+    if (kittyPop > 0) kittyPop -= dt * 4;
+
+    var kx = kittyX + 32;
+    var ky = kittyY + 32;
+    drawKitty(kx, ky, 32);
+
+    updateParticles(dt);
+    drawParticles();
+    updatePopups(dt);
+    drawPopups();
+
     rafId = requestAnimationFrame(loop);
   }
 
   function startMove() {
-    cancelAnimationFrame(rafId);
-    const b = stageBounds();
-    pos.x = 12 + Math.random() * Math.max(1, b.w - 12);
-    pos.y = 12 + Math.random() * Math.max(1, b.h - 12);
-    const speed = 2.2 + Math.random() * 1.4;
-    const ang = Math.random() * Math.PI * 2;
-    vel.x = Math.cos(ang) * speed;
-    vel.y = Math.sin(ang) * speed;
-    last = 0;
-    kitty.classList.add('walking');
+    var b = getBounds();
+    kittyX = 12 + Math.random() * Math.max(1, b.w - 12);
+    kittyY = 12 + Math.random() * Math.max(1, b.h - 12);
+    var speed = 40 + Math.random() * 30;
+    var ang = Math.random() * Math.PI * 2;
+    kittyVX = Math.cos(ang) * speed;
+    kittyVY = Math.sin(ang) * speed;
+    lastTs = 0;
     rafId = requestAnimationFrame(loop);
   }
 
   function stopMove() {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-    kitty.classList.remove('walking');
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
   }
 
   function openGame() {
@@ -120,6 +470,7 @@ window.initGame = function () {
     document.body.style.overflow = 'hidden';
     if (fab) fab.style.display = 'none';
     getAudio();
+    initScene();
     startGame();
   }
 
@@ -134,12 +485,22 @@ window.initGame = function () {
     stopGame();
     score = 0;
     timeLeft = DURATION;
-    scoreEl.textContent = score;
-    timeEl.textContent = timeLeft;
+    particles = [];
+    scorePopups = [];
+    scoreEl.textContent = '0';
+    timeEl.textContent = DURATION;
+    timerFill.style.width = '100%';
     overEl.hidden = true;
+    kittyPop = 0;
     running = true;
     startMove();
-    timer = setInterval(tick, 1000);
+    if (timer) { clearInterval(timer); }
+    timer = setInterval(function() {
+      timeLeft -= 1;
+      timeEl.textContent = timeLeft;
+      timerFill.style.width = (timeLeft / DURATION * 100) + '%';
+      if (timeLeft <= 0) endGame();
+    }, 1000);
   }
 
   function stopGame() {
@@ -148,147 +509,143 @@ window.initGame = function () {
     stopMove();
   }
 
-  function tick() {
-    timeLeft -= 1;
-    timeEl.textContent = timeLeft;
-    if (timeLeft <= 0) endGame();
-  }
-
   function endGame() {
     stopGame();
-    soundOver();
+    sndOver();
     if (score > best) {
       best = score;
       localStorage.setItem(BEST_KEY, String(best));
     }
     bestEl.textContent = best;
     overMsg.textContent = score > 0
-      ? `Você pegou ${score} laço(s) da Hello Kitty! 💕 Recorde: ${best}`
-      : 'O tempo acabou! Tente pegar a Hello Kitty nos próximos laços. 💕';
+      ? 'Voc\u00ea pegou ' + score + ' vez(es) a Hello Kitty! \u2764\ufe0f Recorde: ' + best
+      : 'O tempo acabou! Tente novamente. \u2764\ufe0f';
     overEl.hidden = false;
+    // Draw final frame
+    resizeCanvas();
+    var b = getBounds();
+    drawBackground(b.w, b.h);
+    drawKitty(kittyX + 32, kittyY + 32, 32);
   }
 
-  function catchKitty() {
+  function catchKitty(e) {
     if (!running) return;
+    var rect = canvas.getBoundingClientRect();
+    var cx = kittyX + 32, cy = kittyY + 32;
+    var s = 32;
+    var pt = e.touches ? e.touches[0] : e;
+    var mx = pt.clientX - rect.left;
+    var my = pt.clientY - rect.top;
+    if (Math.abs(mx - cx) > s * 0.6 || Math.abs(my - cy) > s * 0.6) return;
+
     score += 1;
     scoreEl.textContent = score;
-    soundCatch();
-    kitty.classList.remove('pop');
-    void kitty.offsetWidth;
-    kitty.classList.add('pop');
-    const b = stageBounds();
-    pos.x = 12 + Math.random() * Math.max(1, b.w - 12);
-    pos.y = 12 + Math.random() * Math.max(1, b.h - 12);
-    const speed = 2.4 + Math.random() * 1.6;
-    const ang = Math.random() * Math.PI * 2;
-    vel.x = Math.cos(ang) * speed;
-    vel.y = Math.sin(ang) * speed;
+    sndCatch();
+    kittyPop = 1;
+    spawnParticles(cx, cy);
+    spawnScorePopup(cx, cy);
+
+    var b = getBounds();
+    kittyX = 12 + Math.random() * Math.max(1, b.w - 12);
+    kittyY = 12 + Math.random() * Math.max(1, b.h - 12);
+    var speed = 50 + Math.random() * 40;
+    var ang = Math.random() * Math.PI * 2;
+    kittyVX = Math.cos(ang) * speed;
+    kittyVY = Math.sin(ang) * speed;
   }
 
-  // Abrir/fechar
+  // Events
   fab.addEventListener('click', openGame);
   closeBtn.addEventListener('click', closeGame);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeGame(); });
-  document.addEventListener('keydown', (e) => {
+  modal.addEventListener('click', function(e) { if (e.target === modal) closeGame(); });
+  document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeGame();
   });
   restartBtn.addEventListener('click', startGame);
 
-  // Abrir o menu (hamburger) do site a partir do jogo
   if (menuBtn) {
-    menuBtn.addEventListener('click', function () {
-      const navToggle = document.querySelector('.nav-toggle');
-      const sidebar = document.querySelector('.sidebar');
-      const overlay = document.querySelector('.sidebar-overlay');
-      if (navToggle) navToggle.classList.add('active');
-      if (sidebar) sidebar.classList.add('active');
-      if (overlay) overlay.classList.add('active');
+    menuBtn.addEventListener('click', function() {
+      var nt = document.querySelector('.nav-toggle');
+      var sb = document.querySelector('.sidebar');
+      var so = document.querySelector('.sidebar-overlay');
+      if (nt) nt.classList.add('active');
+      if (sb) sb.classList.add('active');
+      if (so) so.classList.add('active');
       document.body.style.overflow = 'hidden';
     });
   }
 
-  // Abrir o jogo a partir do item "Entrar no Jogo" do menu hamburger
-  const sidebarGameLink = document.getElementById('sidebar-open-game');
-  if (sidebarGameLink) {
-    sidebarGameLink.addEventListener('click', function (e) {
+  var sidebarLink = document.getElementById('sidebar-open-game');
+  if (sidebarLink) {
+    sidebarLink.addEventListener('click', function(e) {
       e.preventDefault();
-      const sidebar = document.querySelector('.sidebar');
-      const overlay = document.querySelector('.sidebar-overlay');
-      const navToggle = document.querySelector('.nav-toggle');
-      if (sidebar) sidebar.classList.remove('active');
-      if (overlay) overlay.classList.remove('active');
-      if (navToggle) navToggle.classList.remove('active');
+      var sb = document.querySelector('.sidebar');
+      var so = document.querySelector('.sidebar-overlay');
+      var nt = document.querySelector('.nav-toggle');
+      if (sb) sb.classList.remove('active');
+      if (so) so.classList.remove('active');
+      if (nt) nt.classList.remove('active');
       openGame();
     });
   }
 
-  // Abrir o jogo a partir do link do rodapé
-  const footerGameLink = document.getElementById('footer-open-game');
-  if (footerGameLink) {
-    footerGameLink.addEventListener('click', function (e) {
+  var footerLink = document.getElementById('footer-open-game');
+  if (footerLink) {
+    footerLink.addEventListener('click', function(e) {
       e.preventDefault();
       openGame();
     });
   }
 
-  // Abrir o jogo a partir do banner da home
-  const homeGameLink = document.getElementById('home-open-game');
-  if (homeGameLink) {
-    homeGameLink.addEventListener('click', function (e) {
+  var homeLink = document.getElementById('home-open-game');
+  if (homeLink) {
+    homeLink.addEventListener('click', function(e) {
       e.preventDefault();
       openGame();
     });
   }
 
-  // Pegar a Hello Kitty (mouse + toque)
-  kitty.addEventListener('click', catchKitty);
-  kitty.addEventListener('touchstart', (e) => { e.preventDefault(); catchKitty(); }, { passive: false });
+  // Canvas hit detection (click/touch)
+  canvas.addEventListener('click', catchKitty);
+  canvas.addEventListener('touchstart', function(e) { e.preventDefault(); catchKitty(e); }, { passive: false });
 
-  // Arrastar a Hello Kitty pela área
-  let dragging = false;
-  let offX = 0, offY = 0;
-
+  // Drag
   function dragStart(e) {
     if (!running) return;
+    var pt = e.touches ? e.touches[0] : e;
+    var rect = canvas.getBoundingClientRect();
+    var mx = pt.clientX - rect.left;
+    var my = pt.clientY - rect.top;
+    var cx = kittyX + 32, cy = kittyY + 32;
+    if (Math.abs(mx - cx) > 40 || Math.abs(my - cy) > 40) return;
     dragging = true;
-    kitty.classList.add('grabbing');
-    const pt = e.touches ? e.touches[0] : e;
-    const rect = kitty.getBoundingClientRect();
-    offX = pt.clientX - rect.left;
-    offY = pt.clientY - rect.top;
+    dragOffX = mx - kittyX;
+    dragOffY = my - kittyY;
     e.preventDefault();
   }
 
   function dragMove(e) {
     if (!dragging) return;
-    const pt = e.touches ? e.touches[0] : e;
-    const stageRect = stage.getBoundingClientRect();
-    let x = pt.clientX - stageRect.left - offX;
-    let y = pt.clientY - stageRect.top - offY;
-    const b = stageBounds();
-    x = Math.max(0, Math.min(x, b.w));
-    y = Math.max(0, Math.min(y, b.h));
-    pos.x = x; pos.y = y;
-    kitty.style.left = x + 'px';
-    kitty.style.top = y + 'px';
+    var pt = e.touches ? e.touches[0] : e;
+    var rect = canvas.getBoundingClientRect();
+    var mx = pt.clientX - rect.left - dragOffX;
+    var my = pt.clientY - rect.top - dragOffY;
+    var b = getBounds();
+    kittyX = Math.max(0, Math.min(mx, b.w));
+    kittyY = Math.max(0, Math.min(my, b.h));
     e.preventDefault();
   }
 
-  function dragEnd() {
-    dragging = false;
-    kitty.classList.remove('grabbing');
-  }
+  function dragEnd() { dragging = false; }
 
-  kitty.addEventListener('mousedown', dragStart);
+  canvas.addEventListener('mousedown', dragStart);
   document.addEventListener('mousemove', dragMove);
   document.addEventListener('mouseup', dragEnd);
-  kitty.addEventListener('touchstart', dragStart, { passive: false });
-  kitty.addEventListener('touchmove', dragMove, { passive: false });
-  kitty.addEventListener('touchend', dragEnd);
+  canvas.addEventListener('touchstart', dragStart, { passive: false });
+  document.addEventListener('touchmove', dragMove, { passive: false });
+  document.addEventListener('touchend', dragEnd);
 
-  window.addEventListener('resize', () => {
-    const b = stageBounds();
-    pos.x = Math.min(pos.x, b.w);
-    pos.y = Math.min(pos.y, b.h);
+  window.addEventListener('resize', function() {
+    // Canvas gets resized on next frame via resizeCanvas()
   });
 };
