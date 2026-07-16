@@ -14,7 +14,7 @@ window.initGame = function () {
   var restartBtn = document.getElementById('game-restart');
   var menuBtn = document.getElementById('game-menu');
 
-  if (!fab || !modal || !stage) return;
+  if (!modal || !stage) return;
 
   // Timer bar
   var timerBar = document.createElement('div');
@@ -555,7 +555,7 @@ window.initGame = function () {
   }
 
   // Events
-  fab.addEventListener('click', openGame);
+  if (fab) fab.addEventListener('click', openGame);
   closeBtn.addEventListener('click', closeGame);
   modal.addEventListener('click', function(e) { if (e.target === modal) closeGame(); });
   document.addEventListener('keydown', function(e) {

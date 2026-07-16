@@ -249,11 +249,6 @@
 </footer>`;
 
   const gameHTML = `
-    <button class="game-fab" id="game-fab" aria-label="Abrir jogo da Hello Kitty" title="Jogar Hello Kitty">
-        <span class="game-fab-label">JOGAR</span>
-        <span class="game-fab-emoji" aria-hidden="true">🎀</span>
-    </button>
-
     <div class="modal-overlay" id="game-modal" role="dialog" aria-modal="true" aria-label="Jogo Hello Kitty">
         <div class="modal game-modal">
             <div class="modal-header game-modal-header">
@@ -307,64 +302,8 @@
 
     if (window.initNavigation) window.initNavigation();
     if (window.initThemeToggle) window.initThemeToggle();
-    initPWA();
     if (window.initGame) window.initGame();
     if (window.initGamePage) window.initGamePage();
-  }
-
-  function initPWA() {
-    if (!('serviceWorker' in navigator)) return;
-
-    const head = document.head;
-    if (head && !head.querySelector('link[rel="manifest"]')) {
-      const link = document.createElement('link');
-      link.rel = 'manifest';
-      link.href = '/manifest.json';
-      head.appendChild(link);
-
-      const meta = document.createElement('meta');
-      meta.name = 'theme-color';
-      meta.content = '#003366';
-      head.appendChild(meta);
-    }
-
-    navigator.serviceWorker.register('/sw.js').catch(function () {});
-
-    let deferredPrompt = null;
-    const btn = document.createElement('button');
-    btn.className = 'btn btn-outline btn-sm install-btn';
-    btn.type = 'button';
-    btn.textContent = 'Instalar';
-    btn.style.display = 'none';
-    btn.setAttribute('aria-label', 'Instalar site no computador');
-    btn.addEventListener('click', function () {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.finally(function () {
-        deferredPrompt = null;
-        btn.style.display = 'none';
-      });
-    });
-
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
-      deferredPrompt = e;
-      btn.style.display = '';
-    });
-
-    window.addEventListener('appinstalled', function () {
-      deferredPrompt = null;
-      btn.style.display = 'none';
-    });
-
-    const mountBtn = function () {
-      const actions = document.querySelector('.header-actions');
-      if (actions && !actions.contains(btn)) actions.appendChild(btn);
-    };
-    mountBtn();
-    const obs = new MutationObserver(mountBtn);
-    obs.observe(document.getElementById('header-root'), { childList: true, subtree: true });
-    setTimeout(function () { obs.disconnect(); }, 5000);
   }
 
   if (document.readyState === 'loading') {
