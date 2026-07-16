@@ -1629,6 +1629,18 @@
   color: var(--color-primary);
 }
 
+.game-menu-btn {
+  margin-left: auto;
+  border-color: #ff9ec4;
+  color: #d63384;
+}
+
+.game-menu-btn:hover {
+  background-color: #ffe3f1;
+  border-color: #ff7eb3;
+  color: #d63384;
+}
+
 .game-stage {
   position: relative;
   width: 100%;

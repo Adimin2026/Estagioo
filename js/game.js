@@ -16,6 +16,7 @@ window.initGame = function () {
   const overEl = document.getElementById('game-over');
   const overMsg = document.getElementById('game-over-msg');
   const restartBtn = document.getElementById('game-restart');
+  const menuBtn = document.getElementById('game-menu');
 
   if (!fab || !modal || !stage || !kitty) return;
 
@@ -192,6 +193,19 @@ window.initGame = function () {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeGame();
   });
   restartBtn.addEventListener('click', startGame);
+
+  // Abrir o menu (hamburger) do site a partir do jogo
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function () {
+      const navToggle = document.querySelector('.nav-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.querySelector('.sidebar-overlay');
+      if (navToggle) navToggle.classList.add('active');
+      if (sidebar) sidebar.classList.add('active');
+      if (overlay) overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  }
 
   // Pegar a Hello Kitty (mouse + toque)
   kitty.addEventListener('click', catchKitty);

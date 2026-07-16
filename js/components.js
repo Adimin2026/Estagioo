@@ -251,6 +251,7 @@
                     <span class="game-stat">⏱️ <b id="game-time">30</b>s</span>
                     <span class="game-stat">🎯 <b id="game-score">0</b></span>
                     <span class="game-stat">🏆 <b id="game-best">0</b></span>
+                    <button class="btn btn-ghost btn-sm game-menu-btn" id="game-menu" type="button" title="Abrir menu do site">☰ Menu</button>
                 </div>
                 <div class="game-stage" id="game-stage" aria-label="Área do jogo">
                     <div class="game-kitty" id="game-kitty" aria-hidden="true">
