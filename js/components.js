@@ -168,6 +168,15 @@
                     <span>Sobre</span>
                 </a>
             </li>
+            <li class="sidebar-item">
+                <a href="pages/jogo.html" class="sidebar-link">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 7v5l3 3"></path>
+                    </svg>
+                    <span>Jogar 🎀</span>
+                </a>
+            </li>
         </ul>
     </nav>
     <div class="sidebar-footer">
@@ -202,7 +211,7 @@
                     <li><a href="pages/guia-estagiario.html">Guia do Estagiário</a></li>
                     <li><a href="pages/professores.html">Professores</a></li>
                     <li><a href="pages/sobre.html">Sobre</a></li>
-                    <li><a href="#" id="footer-open-game">🎀 Jogar Hello Kitty</a></li>
+                    <li><a href="pages/jogo.html">🎀 Jogar Hello Kitty</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -296,6 +305,7 @@
     if (window.initThemeToggle) window.initThemeToggle();
     initPWA();
     if (window.initGame) window.initGame();
+    if (window.initGamePage) window.initGamePage();
   }
 
   function initPWA() {
