@@ -231,8 +231,8 @@
 
   const gameHTML = `
     <button class="game-fab" id="game-fab" aria-label="Abrir jogo" title="Jogar Hello Kitty">
-        <span class="game-fab-emoji" aria-hidden="true">🎀</span>
         <span class="game-fab-text">Jogar</span>
+        <span class="game-fab-emoji" aria-hidden="true">🎀</span>
     </button>
 
     <div class="modal-overlay" id="game-modal" role="dialog" aria-modal="true" aria-label="Jogo Hello Kitty">
