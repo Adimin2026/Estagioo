@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulação 3D - Portal de Estágio IFRO</title>
+<link rel="stylesheet" href="../css/pages/game.css">
+</head>
+<body>
+<div id="game-container"></div>
+
+<div id="menu-screen">
+  <div class="menu-box">
+    <h1 class="menu-title">&#127774; Simulação 3D</h1>
+    <p class="menu-subtitle">Explore um mundo procedural, colete estrelas e desbloqueie conquistas!</p>
+    <div class="mode-list">
+      <button class="mode-btn" data-mode="free">
+        <span class="mode-icon">&#127795;</span>
+        <span class="mode-info">
+          <strong>Exploração Livre</strong>
+          <small>Sem pressa, explore e colete 15 estrelas no seu tempo.</small>
+        </span>
+      </button>
+      <button class="mode-btn" data-mode="night">
+        <span class="mode-icon">&#127769;</span>
+        <span class="mode-info">
+          <strong>Modo Noturno</strong>
+          <small>Mundo escuro com lampiões, lua e estrelas no céu. Mais atmosférico.</small>
+        </span>
+      </button>
+      <button class="mode-btn" data-mode="time">
+        <span class="mode-icon">&#9201;</span>
+        <span class="mode-info">
+          <strong>Corrida contra o Tempo</strong>
+          <small>Colete todas as estrelas em até 3 minutos!</small>
+        </span>
+      </button>
+    </div>
+    <div class="menu-controls">
+      <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Mover &middot; <kbd>Mouse</kbd> Olhar &middot; <kbd>Space</kbd> Pular &middot; <kbd>Shift</kbd> Correr &middot; <kbd>Duplo W/A/S/D</kbd> Dash &middot; <kbd>E</kbd> Interagir &middot; <kbd>B</kbd> Loja &middot; <kbd>P</kbd> Foto &middot; <kbd>ESC</kbd> Menu &middot; <kbd>F</kbd> Tela cheia</p>
+    </div>
+    <a href="../index.html" class="menu-back">&#8592; Voltar ao Portal</a>
+  </div>
+</div>
+
+<div id="start-overlay" style="display:none">
+  <div class="start-box">
+    <h2 id="start-mode-name"></h2>
+    <p id="start-mode-desc"></p>
+    <p class="start-hint">Clique para começar</p>
+  </div>
+</div>
+
+<div id="hud" style="display:none">
+  <div id="hud-top">
+    <div id="hud-left">
+      <span id="score">&#11088; 0/15</span>
+      <span id="timer" style="display:none">&#9201; 3:00</span>
+      <span id="fps-counter" title="FPS">60</span>
+      <span id="hud-distance" style="display:none"></span>
+      <span id="combo-display" style="display:none"></span>
+    </div>
+    <div id="hud-right">
+      <span id="powerup-indicator" style="display:none"></span>
+      <span id="btn-fullscreen" title="Tela cheia (F)">&#9974;</span>
+      <a href="../index.html" id="btn-voltar">&#10005; Sair</a>
+    </div>
+  </div>
+  <div id="hud-compass"><div id="compass-arrow">&#129169;</div></div>
+  <div id="stamina-bar-container">
+    <div id="stamina-bar-fill" style="width:100%"></div>
+    <span id="stamina-text">100%</span>
+  </div>
+  <div id="dash-indicator" style="display:none">&#9889; Dash</div>
+  <div id="interact-hint" style="display:none"></div>
+  <div id="hud-hint" class="hint-fade">Pressione <kbd>ESC</kbd> para pausar</div>
+</div>
+
+<div id="pause-menu" style="display:none">
+  <div class="pause-box">
+    <h2>&#9208; Pausado</h2>
+    <div id="pause-buttons">
+      <button id="btn-resume" class="pause-btn">Continuar</button>
+      <button id="btn-settings-toggle" class="pause-btn">Configurações</button>
+      <button id="btn-quit" class="pause-btn secondary">Sair do jogo</button>
+    </div>
+    <div id="settings-panel" style="display:none">
+      <div class="setting-row">
+        <label>Sensibilidade do mouse</label>
+        <div class="setting-control">
+          <input type="range" id="setting-sensitivity" min="1" max="20" value="10">
+          <span id="setting-sensitivity-val">10</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <label>Volume dos efeitos</label>
+        <div class="setting-control">
+          <input type="range" id="setting-volume" min="0" max="100" value="50">
+          <span id="setting-volume-val">50%</span>
+        </div>
+      </div>
+      <div class="setting-row">
+        <label>Música ambiente</label>
+        <div class="setting-control">
+          <input type="range" id="setting-music" min="0" max="100" value="30">
+          <span id="setting-music-val">30%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="achievement-popup" style="display:none">
+  <div class="achievement-content">
+    <span class="achievement-icon">&#127942;</span>
+    <div>
+      <div class="achievement-title">Conquista!</div>
+      <div class="achievement-desc" id="achievement-desc"></div>
+    </div>
+  </div>
+</div>
+
+<div id="win-overlay" style="display:none">
+  <div class="win-box">
+    <h1>&#127881; Parabéns!</h1>
+    <p id="win-stats"></p>
+    <p id="win-achievements" style="font-size:14px;color:#FFD700;margin-bottom:16px"></p>
+    <div class="win-buttons">
+      <button onclick="location.reload()">Jogar novamente</button>
+      <a href="../index.html">&#8592; Voltar ao Portal</a>
+    </div>
+  </div>
+</div>
+
+<div id="lose-overlay" style="display:none">
+  <div class="win-box">
+    <h1 style="color:#ff6644">&#9200; Tempo Esgotado!</h1>
+    <p id="lose-stats"></p>
+    <div class="win-buttons">
+      <button onclick="location.reload()">Tentar novamente</button>
+      <a href="../index.html">&#8592; Voltar ao Portal</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../game/js/game.js"></script>
+</body>
+</html>

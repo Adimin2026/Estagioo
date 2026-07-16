@@ -1,0 +1,106 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Arial, sans-serif; }
+#game-container { width: 100%; height: 100%; display: block; }
+#game-container canvas { display: block; }
+
+/* Menu */
+#menu-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 90; background: radial-gradient(ellipse at center, #1a2a1a 0%, #0a0a0a 100%); }
+.menu-box { max-width: 520px; width: 90%; text-align: center; }
+.menu-title { color: #FFD700; font-size: 38px; text-shadow: 0 0 30px rgba(255,215,0,0.3); margin-bottom: 8px; }
+.menu-subtitle { color: #999; font-size: 14px; margin-bottom: 28px; line-height: 1.4; }
+.mode-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.mode-btn { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px 20px; cursor: pointer; transition: 0.25s; text-align: left; width: 100%; color: #ccc; }
+.mode-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+.mode-icon { font-size: 28px; flex-shrink: 0; }
+.mode-info { display: flex; flex-direction: column; }
+.mode-info strong { color: #fff; font-size: 16px; margin-bottom: 2px; }
+.mode-info small { color: #888; font-size: 12px; line-height: 1.4; }
+.menu-controls { color: rgba(255,255,255,0.3); font-size: 12px; line-height: 1.6; margin-bottom: 16px; }
+.menu-back { color: rgba(255,255,255,0.4); font-size: 14px; text-decoration: none; transition: 0.2s; }
+.menu-back:hover { color: #fff; }
+
+/* Start overlay */
+#start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 20; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); cursor: pointer; }
+.start-box { text-align: center; max-width: 400px; padding: 20px; }
+.start-box h2 { color: #FFD700; font-size: 28px; margin-bottom: 10px; }
+.start-box p { color: #ccc; font-size: 16px; margin-bottom: 6px; }
+.start-hint { color: #FFD700; font-size: 14px; margin-top: 18px; animation: pulse 1.5s ease-in-out infinite; }
+
+/* HUD */
+#hud { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+#hud-top { position: absolute; top: 12px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 14px; align-items: center; }
+#hud-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+#score { color: #FFD700; font-size: 18px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.7); background: rgba(0,0,0,0.35); padding: 4px 12px; border-radius: 8px; backdrop-filter: blur(4px); }
+#timer { font-size: 16px; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.7); background: rgba(0,0,0,0.35); padding: 4px 12px; border-radius: 8px; backdrop-filter: blur(4px); }
+#fps-counter { color: rgba(255,255,255,0.35); font-size: 11px; font-family: monospace; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; }
+#hud-distance { color: rgba(255,255,255,0.5); font-size: 12px; background: rgba(0,0,0,0.25); padding: 2px 8px; border-radius: 6px; }
+#hud-right { display: flex; align-items: center; gap: 8px; }
+#powerup-indicator { color: #00ff88; font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 3px 10px; border-radius: 8px; backdrop-filter: blur(4px); border: 1px solid rgba(0,255,136,0.3); text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+#btn-fullscreen { font-size: 16px; cursor: pointer; pointer-events: all; padding: 4px 6px; border-radius: 6px; transition: 0.2s; background: rgba(0,0,0,0.3); }
+#btn-fullscreen:hover { background: rgba(255,255,255,0.15); }
+#btn-voltar { color: rgba(255,255,255,0.6); font-size: 13px; text-decoration: none; background: rgba(0,0,0,0.35); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(4px); transition: 0.2s; pointer-events: all; }
+#btn-voltar:hover { background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.25); }
+
+/* Compass */
+#hud-compass { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; pointer-events: none; }
+#compass-arrow { font-size: 28px; color: rgba(255,215,0,0.6); text-shadow: 0 2px 8px rgba(0,0,0,0.5); transition: transform 0.1s ease; text-align: center; line-height: 40px; }
+
+/* Stamina Bar */
+#stamina-bar-container { position: absolute; bottom: 55px; left: 50%; transform: translateX(-50%); width: 160px; height: 14px; background: rgba(0,0,0,0.4); border-radius: 7px; overflow: visible; backdrop-filter: blur(4px); pointer-events: none; }
+#stamina-bar-fill { height: 100%; background: linear-gradient(90deg, #ff6644, #ffaa44, #FFD700); border-radius: 7px; transition: width 0.1s ease; min-width: 0; }
+#stamina-text { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 9px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8); letter-spacing: 0.5px; }
+#stamina-bar-fill[style*="width: 0"] { background: #ff4444; }
+
+/* Combo */
+#combo-display { color: #00ffffee; font-size: 14px; font-weight: 700; text-shadow: 0 0 12px rgba(0,255,255,0.4); background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 8px; animation: comboPulse 0.3s ease; }
+
+/* Dash indicator */
+#dash-indicator { position: absolute; bottom: 75px; left: 50%; transform: translateX(-50%); color: #88ddff; font-size: 11px; font-weight: 600; text-shadow: 0 0 8px rgba(136,221,255,0.4); background: rgba(0,0,0,0.3); padding: 2px 8px; border-radius: 6px; pointer-events: none; transition: opacity 0.3s; }
+
+/* Interact Hint */
+#interact-hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: #FFD700; font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.45); padding: 4px 14px; border-radius: 8px; backdrop-filter: blur(4px); pointer-events: none; animation: pulse 1.5s ease-in-out infinite; }
+
+/* Hint */
+#hud-hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 12px; background: rgba(0,0,0,0.2); padding: 3px 12px; border-radius: 6px; transition: opacity 1s; pointer-events: none; }
+.hint-fade { opacity: 1; }
+
+/* Pause */
+#pause-menu { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 50; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); }
+.pause-box { background: linear-gradient(145deg, #1a2a1a, #0d1a0d); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 32px 40px; text-align: center; max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.pause-box h2 { color: #FFD700; font-size: 26px; margin-bottom: 20px; }
+.pause-btn { display: block; width: 100%; padding: 12px 20px; margin-bottom: 8px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.08); color: #fff; }
+.pause-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+.pause-btn.secondary { background: rgba(255,68,68,0.1); color: #ff6666; }
+.pause-btn.secondary:hover { background: rgba(255,68,68,0.2); }
+
+/* Settings */
+#settings-panel { margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+.setting-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.setting-row label { color: #aaa; font-size: 13px; text-align: left; }
+.setting-control { display: flex; align-items: center; gap: 8px; }
+.setting-control input[type=range] { width: 100px; accent-color: #FFD700; }
+.setting-control span { color: #FFD700; font-size: 13px; font-weight: 600; min-width: 30px; text-align: right; }
+
+/* Achievement popup */
+#achievement-popup { position: fixed; top: 60px; right: 20px; z-index: 60; display: flex; align-items: center; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05)); border: 1px solid rgba(255,215,0,0.25); border-radius: 12px; padding: 12px 18px; backdrop-filter: blur(8px); max-width: 320px; transition: all 0.4s ease; transform: translateX(120%); opacity: 0; }
+#achievement-popup.ach-show { transform: translateX(0); opacity: 1; }
+.achievement-content { display: flex; align-items: center; gap: 12px; }
+.achievement-icon { font-size: 32px; }
+.achievement-title { color: #FFD700; font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.achievement-desc { color: #ccc; font-size: 13px; }
+
+/* Win / Lose */
+#win-overlay, #lose-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 30; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+.win-box { background: linear-gradient(145deg, #1a2a1a, #0d1a0d); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 36px 44px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.win-box h1 { color: #FFD700; font-size: 32px; margin-bottom: 8px; }
+.win-box p { color: #ccc; font-size: 16px; margin-bottom: 20px; }
+.win-buttons { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.win-buttons button { background: #FFD700; color: #1a2a1a; border: none; padding: 10px 32px; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.win-buttons button:hover { background: #FFC000; transform: scale(1.05); }
+.win-buttons a { color: rgba(255,255,255,0.4); font-size: 14px; text-decoration: none; transition: 0.2s; }
+.win-buttons a:hover { color: #fff; }
+
+/* General */
+kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; padding: 1px 6px; font-size: 11px; color: #ddd; margin: 0 2px; font-family: inherit; }
+@keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes comboPulse { 0% { transform: scale(1.2); } 100% { transform: scale(1); } }
