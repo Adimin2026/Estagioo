@@ -212,7 +212,20 @@ function getGrassTexture() {
 // ===== FIRST PERSON ARMS =====
 function createArms() {
   var grp = new THREE.Group();
-  // Always use procedural first-person arms (the GLB character is just a cube)
+
+  // Use the Blender-made character model as first-person arms
+  if (Models.cache.character) {
+    var charModel = Models.cache.character.clone();
+    charModel.scale.set(1, 1, 1);
+    charModel.rotation.set(0, Math.PI, 0);
+    grp.add(charModel);
+    grp.position.set(0, -1.67, -0.5);
+    grp.userData = { swing: 0 };
+    camera.add(grp);
+    return grp;
+  }
+
+  // Fallback: procedural arms
   var skin = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.8 });
   var shirt = new THREE.MeshStandardMaterial({ color: 0x4488cc, roughness: 0.7 });
   var handMat = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.7 });
@@ -1135,9 +1148,14 @@ function togglePhotoMode() {
       thirdPersonCam = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 400);
       scene.add(thirdPersonCam);
     }
-    // Create procedural third-person character
+    // Use Blender GLB character for third person, fallback to procedural
     if (!thirdPersonChar) {
-      thirdPersonChar = createThirdPersonCharacter();
+      if (Models.cache.character) {
+        thirdPersonChar = Models.cache.character.clone();
+        thirdPersonChar.scale.set(1, 1, 1);
+      } else {
+        thirdPersonChar = createThirdPersonCharacter();
+      }
       scene.add(thirdPersonChar);
     }
     thirdPersonCam.visible = true;
@@ -1581,6 +1599,7 @@ function animate() {
       // Animate character limbs
       var isMoving = keys.w || keys.a || keys.s || keys.d;
       var walkTime = time * (keys.shift ? 14 : 10);
+      // Procedural character animation
       if (thirdPersonChar.userData.lArm) {
         if (isMoving) {
           thirdPersonChar.userData.lArm.rotation.x = Math.sin(walkTime) * 0.4;
@@ -1592,6 +1611,27 @@ function animate() {
           thirdPersonChar.userData.rArm.rotation.x *= 0.9;
           thirdPersonChar.userData.lLeg.rotation.x *= 0.9;
           thirdPersonChar.userData.rLeg.rotation.x *= 0.9;
+        }
+      }
+      // GLB character animation - find limbs by Blender object names
+      if (!thirdPersonChar.userData.lArm && thirdPersonChar.children) {
+        thirdPersonChar.traverse(function(c) {
+          if (!c._animInit) {
+            c._animInit = true;
+            if (c.name.indexOf('UpperArm_L') >= 0 || c.name.indexOf('ForeArm_L') >= 0) c._walkAxis = 'x';
+            if (c.name.indexOf('UpperArm_R') >= 0 || c.name.indexOf('ForeArm_R') >= 0) c._walkAxis = 'x';
+            if (c.name.indexOf('UpperLeg_L') >= 0 || c.name.indexOf('LowerLeg_L') >= 0) c._walkAxis = 'x';
+            if (c.name.indexOf('UpperLeg_R') >= 0 || c.name.indexOf('LowerLeg_R') >= 0) c._walkAxis = 'x';
+          }
+        });
+        if (isMoving) {
+          thirdPersonChar.traverse(function(c) {
+            if (c._walkAxis && c.name.indexOf('L') >= 0) {
+              c.rotation.x = Math.sin(walkTime) * 0.4;
+            } else if (c._walkAxis && c.name.indexOf('R') >= 0) {
+              c.rotation.x = -Math.sin(walkTime) * 0.4;
+            }
+          });
         }
       }
 
@@ -1681,11 +1721,21 @@ function animate() {
         camera.position.y += Math.sin(time * bobSpeed) * 0.025;
         if (playerArms) {
           var swing = Math.sin(time * bobSpeed) * 0.08;
-          playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
+          var isGLBArm = Models.cache.character && playerArms.children.length > 0 && playerArms.children[0] !== playerArms;
+          if (isGLBArm) {
+            playerArms.position.y = -1.67 + Math.abs(swing) * 0.15;
+          } else {
+            playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
+          }
           playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
         }
       } else if (playerArms) {
-        playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
+        var isGLBArm2 = Models.cache.character && playerArms.children.length > 0;
+        if (isGLBArm2) {
+          playerArms.position.y += (-1.67 - playerArms.position.y) * 0.05;
+        } else {
+          playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
+        }
         playerArms.rotation.z *= 0.95;
       }
 
