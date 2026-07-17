@@ -29,7 +29,6 @@ try { var tse = localStorage.getItem('sim3d_total'); if (tse) totalStarsEver = p
 var upgrades = { jumpBonus: 0, staminaBonus: 0, speedBonus: 0, magnetPerm: false };
 try { var u = localStorage.getItem('sim3d_upg'); if (u) upgrades = JSON.parse(u); } catch(e) {}
 var playerArms = null;
-var targetEulerY = 0, targetEulerX = 0;
 
 // Day/Night cycle
 var dayTime = 0.35;
@@ -217,11 +216,10 @@ function createArms() {
   // Try to use the downloaded character model as first-person arms
   if (Models.cache.character) {
     var charModel = Models.cache.character.clone();
-    charModel.scale.set(0.08, 0.08, 0.08);
-    charModel.position.set(0, 0, 0);
+    charModel.scale.set(0.5, 0.5, 0.5);
     charModel.rotation.set(0, Math.PI, 0);
     grp.add(charModel);
-    grp.position.set(0.15, -0.5, -0.45);
+    grp.position.set(0.4, -0.6, -0.5);
     grp.userData = { swing: 0, isGLB: true };
     camera.add(grp);
     return grp;
@@ -415,7 +413,7 @@ function buildWorld() {
       var gr;
       if (useGLB) {
         gr = glbClouds[ci % glbClouds.length].clone();
-        var cloudScale = 0.3 + rr(0, 0.25);
+        var cloudScale = 0.6 + rr(0, 0.4);
         gr.scale.set(cloudScale, cloudScale, cloudScale);
         if (isNight) {
           gr.traverse(function (c) { if (c.isMesh) c.material.color.setHex(0x333355); });
@@ -509,7 +507,7 @@ function buildWorld() {
       var useGLB = hasGLBMtn && mi < 4;
       if (useGLB) {
         var mtn = Models.cache.mountain.clone();
-        var mtnScale = 0.4 + rr(0, 0.3);
+        var mtnScale = 0.8 + rr(0, 0.6);
         mtn.scale.set(mtnScale, mtnScale, mtnScale);
         mtn.position.set(mx, getHeight(mx, mz), mz);
         mtn.rotation.y = rr(0, 6.28);
@@ -613,7 +611,7 @@ function buildWorld() {
     var gr;
     if (usePalm) {
       gr = Models.cache.palm.clone();
-      var palmScale = 0.02 + rr(0, 0.01);
+      var palmScale = 0.04 + rr(0, 0.02);
       gr.scale.set(palmScale, palmScale, palmScale);
       gr.position.set(tx, getHeight(tx, tz), tz);
       gr.rotation.y = sr() * 6.28;
@@ -691,7 +689,7 @@ function buildWorld() {
       if (dx2 * dx2 + dz2 * dz2 < 30 || !canPlace(dx2, dz2, 3)) continue;
       placed.push([dx2, dz2]);
       var col = Models.cache.column.clone();
-      var colScale = 0.3 + rr(0, 0.2);
+      var colScale = 0.5 + rr(0, 0.3);
       col.scale.set(colScale, colScale, colScale);
       col.position.set(dx2, getHeight(dx2, dz2), dz2);
       col.rotation.y = rr(0, 6.28);
@@ -705,7 +703,7 @@ function buildWorld() {
       if (mx2 * mx2 + mz2 * mz2 < 30 || !canPlace(mx2, mz2, 4)) continue;
       placed.push([mx2, mz2]);
       var mach = Models.cache.machine.clone();
-      var machScale = 0.15 + rr(0, 0.1);
+      var machScale = 0.3 + rr(0, 0.2);
       mach.scale.set(machScale, machScale, machScale);
       mach.position.set(mx2, getHeight(mx2, mz2), mz2);
       mach.rotation.y = rr(0, 6.28);
@@ -721,7 +719,7 @@ function buildWorld() {
       if (bx * bx + bz * bz < 25 || !canPlace(bx, bz, 2.5)) continue;
       placed.push([bx, bz]);
       var bush = Models.cache.bush.clone();
-      var bushScale = 0.015 + rr(0, 0.01);
+      var bushScale = 0.03 + rr(0, 0.02);
       bush.scale.set(bushScale, bushScale, bushScale);
       bush.position.set(bx, getHeight(bx, bz), bz);
       bush.rotation.y = rr(0, 6.28);
@@ -737,7 +735,7 @@ function buildWorld() {
       if (fx2 * fx2 + fz2 * fz2 < 25 || !canPlace(fx2, fz2, 2)) continue;
       placed.push([fx2, fz2]);
       var flower = Models.cache.flower.clone();
-      var flScale = 0.03 + rr(0, 0.02);
+      var flScale = 0.06 + rr(0, 0.04);
       flower.scale.set(flScale, flScale, flScale);
       flower.position.set(fx2, getHeight(fx2, fz2), fz2);
       flower.rotation.y = rr(0, 6.28);
@@ -822,7 +820,7 @@ function buildWorld() {
     var crystal;
     if (Models.cache.orb) {
       crystal = Models.cache.orb.clone();
-      crystal.scale.set(0.15, 0.15, 0.15);
+      crystal.scale.set(0.35, 0.35, 0.35);
       crystal.position.y += 0.1;
     } else {
       crystal = Models.createCrystalOrb();
@@ -843,7 +841,7 @@ function buildWorld() {
     // Pedestal under orb
     if (Models.cache.pedestal) {
       var ped = Models.cache.pedestal.clone();
-      var pedScale = 0.02;
+      var pedScale = 0.04;
       ped.scale.set(pedScale, pedScale, pedScale);
       ped.position.set(ox, getHeight(ox, oz), oz);
       ped.rotation.y = sr() * 6.28;
@@ -866,7 +864,7 @@ function buildWorld() {
         var body;
         if (Models.cache.enemy) {
           body = Models.cache.enemy.clone();
-          body.scale.set(0.12, 0.12, 0.12);
+          body.scale.set(0.25, 0.25, 0.25);
           body.rotation.y = rr(0, 6.28);
         } else {
           body = Models.createSlime(1 + rr(0, 0.4));
@@ -1115,11 +1113,12 @@ function setupControls() {
   document.addEventListener('mousemove', function(e) {
     if (!locked || !started || paused) return;
     var sens = CFG.sensitivity / 10;
-    targetEulerY -= e.movementX * 0.002 * sens;
-    targetEulerX -= e.movementY * 0.002 * sens;
-    targetEulerX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetEulerX));
+    euler.setFromQuaternion(camera.quaternion);
+    euler.y -= e.movementX * 0.002 * sens;
+    euler.x -= e.movementY * 0.002 * sens;
+    euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
+    camera.quaternion.setFromEuler(euler);
   });
-  // Apply smooth camera each frame in the animation loop
   startOv.addEventListener('click', function() {
     if (ended) return;
     started = true;
@@ -1477,12 +1476,17 @@ function animate() {
     // Weather
     updateWeather(dt);
 
-    // Smooth camera
-    if (locked && started && !paused) {
-      euler.setFromQuaternion(camera.quaternion);
-      euler.y += (targetEulerY - euler.y) * Math.min(1, dt * 12);
-      euler.x += (targetEulerX - euler.x) * Math.min(1, dt * 12);
-      camera.quaternion.setFromEuler(euler);
+    // Photo mode - update character and camera each frame
+    if (photoModeActive && thirdPersonCam && thirdPersonChar) {
+      thirdPersonChar.position.copy(camera.position);
+      thirdPersonChar.position.y -= 0.85;
+      thirdPersonChar.rotation.y = euler.y;
+      thirdPersonCam.position.set(
+        camera.position.x + Math.sin(euler.y) * 4,
+        camera.position.y + 2,
+        camera.position.z + Math.cos(euler.y) * 4
+      );
+      thirdPersonCam.lookAt(camera.position.x, camera.position.y - 0.3, camera.position.z);
     }
 
     // Movement
