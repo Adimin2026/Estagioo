@@ -611,7 +611,7 @@ function buildWorld() {
     var gr;
     if (usePalm) {
       gr = Models.cache.palm.clone();
-      var palmScale = 0.6 + rr(0, 0.3);
+      var palmScale = 3 + rr(0, 1.5);
       gr.scale.set(palmScale, palmScale, palmScale);
       gr.position.set(tx, getHeight(tx, tz), tz);
       gr.rotation.y = sr() * 6.28;
