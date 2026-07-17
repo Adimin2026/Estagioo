@@ -216,7 +216,7 @@ function createArms() {
   // Try to use the downloaded character model as first-person arms
   if (Models.cache.character) {
     var charModel = Models.cache.character.clone();
-    charModel.scale.set(0.5, 0.5, 0.5);
+    charModel.scale.set(7.5, 7.5, 7.5);
     charModel.rotation.set(0, Math.PI, 0);
     grp.add(charModel);
     grp.position.set(0.4, -0.6, -0.5);
@@ -413,7 +413,7 @@ function buildWorld() {
       var gr;
       if (useGLB) {
         gr = glbClouds[ci % glbClouds.length].clone();
-        var cloudScale = 0.6 + rr(0, 0.4);
+        var cloudScale = 9 + rr(0, 6);
         gr.scale.set(cloudScale, cloudScale, cloudScale);
         if (isNight) {
           gr.traverse(function (c) { if (c.isMesh) c.material.color.setHex(0x333355); });
@@ -507,7 +507,7 @@ function buildWorld() {
       var useGLB = hasGLBMtn && mi < 4;
       if (useGLB) {
         var mtn = Models.cache.mountain.clone();
-        var mtnScale = 0.8 + rr(0, 0.6);
+        var mtnScale = 12 + rr(0, 9);
         mtn.scale.set(mtnScale, mtnScale, mtnScale);
         mtn.position.set(mx, getHeight(mx, mz), mz);
         mtn.rotation.y = rr(0, 6.28);
@@ -611,7 +611,7 @@ function buildWorld() {
     var gr;
     if (usePalm) {
       gr = Models.cache.palm.clone();
-      var palmScale = 0.04 + rr(0, 0.02);
+      var palmScale = 0.6 + rr(0, 0.3);
       gr.scale.set(palmScale, palmScale, palmScale);
       gr.position.set(tx, getHeight(tx, tz), tz);
       gr.rotation.y = sr() * 6.28;
@@ -689,7 +689,7 @@ function buildWorld() {
       if (dx2 * dx2 + dz2 * dz2 < 30 || !canPlace(dx2, dz2, 3)) continue;
       placed.push([dx2, dz2]);
       var col = Models.cache.column.clone();
-      var colScale = 0.5 + rr(0, 0.3);
+      var colScale = 7.5 + rr(0, 4.5);
       col.scale.set(colScale, colScale, colScale);
       col.position.set(dx2, getHeight(dx2, dz2), dz2);
       col.rotation.y = rr(0, 6.28);
@@ -703,7 +703,7 @@ function buildWorld() {
       if (mx2 * mx2 + mz2 * mz2 < 30 || !canPlace(mx2, mz2, 4)) continue;
       placed.push([mx2, mz2]);
       var mach = Models.cache.machine.clone();
-      var machScale = 0.3 + rr(0, 0.2);
+      var machScale = 4.5 + rr(0, 3);
       mach.scale.set(machScale, machScale, machScale);
       mach.position.set(mx2, getHeight(mx2, mz2), mz2);
       mach.rotation.y = rr(0, 6.28);
@@ -719,7 +719,7 @@ function buildWorld() {
       if (bx * bx + bz * bz < 25 || !canPlace(bx, bz, 2.5)) continue;
       placed.push([bx, bz]);
       var bush = Models.cache.bush.clone();
-      var bushScale = 0.03 + rr(0, 0.02);
+      var bushScale = 0.45 + rr(0, 0.3);
       bush.scale.set(bushScale, bushScale, bushScale);
       bush.position.set(bx, getHeight(bx, bz), bz);
       bush.rotation.y = rr(0, 6.28);
@@ -735,7 +735,7 @@ function buildWorld() {
       if (fx2 * fx2 + fz2 * fz2 < 25 || !canPlace(fx2, fz2, 2)) continue;
       placed.push([fx2, fz2]);
       var flower = Models.cache.flower.clone();
-      var flScale = 0.06 + rr(0, 0.04);
+      var flScale = 0.9 + rr(0, 0.6);
       flower.scale.set(flScale, flScale, flScale);
       flower.position.set(fx2, getHeight(fx2, fz2), fz2);
       flower.rotation.y = rr(0, 6.28);
@@ -820,7 +820,7 @@ function buildWorld() {
     var crystal;
     if (Models.cache.orb) {
       crystal = Models.cache.orb.clone();
-      crystal.scale.set(0.35, 0.35, 0.35);
+      crystal.scale.set(5.25, 5.25, 5.25);
       crystal.position.y += 0.1;
     } else {
       crystal = Models.createCrystalOrb();
@@ -841,7 +841,7 @@ function buildWorld() {
     // Pedestal under orb
     if (Models.cache.pedestal) {
       var ped = Models.cache.pedestal.clone();
-      var pedScale = 0.04;
+      var pedScale = 0.6;
       ped.scale.set(pedScale, pedScale, pedScale);
       ped.position.set(ox, getHeight(ox, oz), oz);
       ped.rotation.y = sr() * 6.28;
@@ -864,7 +864,7 @@ function buildWorld() {
         var body;
         if (Models.cache.enemy) {
           body = Models.cache.enemy.clone();
-          body.scale.set(0.25, 0.25, 0.25);
+          body.scale.set(3.75, 3.75, 3.75);
           body.rotation.y = rr(0, 6.28);
         } else {
           body = Models.createSlime(1 + rr(0, 0.4));
@@ -1057,7 +1057,7 @@ function togglePhotoMode() {
       thirdPersonCam = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 400);
       scene.add(thirdPersonCam);
       thirdPersonChar = Models.cache.character.clone();
-      thirdPersonChar.scale.set(0.5, 0.5, 0.5);
+      thirdPersonChar.scale.set(7.5, 7.5, 7.5);
       scene.add(thirdPersonChar);
     }
     if (thirdPersonCam && thirdPersonChar) {
