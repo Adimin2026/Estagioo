@@ -212,25 +212,12 @@ function getGrassTexture() {
 // ===== FIRST PERSON ARMS =====
 function createArms() {
   var grp = new THREE.Group();
-
-  // Try to use the downloaded character model as first-person arms
-  if (Models.cache.character) {
-    var charModel = Models.cache.character.clone();
-    charModel.scale.set(0.35, 0.35, 0.35);
-    charModel.rotation.set(0, Math.PI, 0);
-    grp.add(charModel);
-    grp.position.set(-0.3, -0.35, -0.4);
-    grp.userData = { swing: 0, isGLB: true };
-    console.log('Character GLB loaded, scale:', 0.35, 'pos:', grp.position.x, grp.position.y, grp.position.z);
-    camera.add(grp);
-    return grp;
-  }
-
-  // Fallback: procedural arms
+  // Always use procedural first-person arms (the GLB character is just a cube)
   var skin = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.8 });
   var shirt = new THREE.MeshStandardMaterial({ color: 0x4488cc, roughness: 0.7 });
   var handMat = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.7 });
 
+  // Left arm
   var lu = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 0.22, 6), shirt);
   lu.position.set(-0.22, -0.12, -0.15);
   lu.rotation.z = 0.35; lu.rotation.x = -0.6;
@@ -243,6 +230,7 @@ function createArms() {
   lh.position.set(-0.3, -0.42, -0.06);
   grp.add(lh);
 
+  // Right arm
   var ru = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 0.22, 6), shirt);
   ru.position.set(0.22, -0.12, -0.15);
   ru.rotation.z = -0.35; ru.rotation.x = -0.6;
@@ -263,6 +251,91 @@ function createArms() {
   grp.userData = { swing: 0, isGLB: false };
   camera.add(grp);
   return grp;
+}
+
+// Create a full-body character for third-person view
+function createThirdPersonCharacter() {
+  var gr = new THREE.Group();
+  var skin = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.8 });
+  var shirt = new THREE.MeshStandardMaterial({ color: 0x4488cc, roughness: 0.7 });
+  var pants = new THREE.MeshStandardMaterial({ color: 0x335577, roughness: 0.8 });
+  var shoes = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
+  var eyeWhite = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0 });
+  var eyePupil = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0 });
+  var hair = new THREE.MeshStandardMaterial({ color: 0x4a3520, roughness: 0.9 });
+
+  // Head
+  var head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), skin);
+  head.position.y = 1.65;
+  head.castShadow = true;
+  gr.add(head);
+
+  // Hair
+  var hairMesh = new THREE.Mesh(new THREE.SphereGeometry(0.21, 8, 8, 0, 6.28, 0, 1.8), hair);
+  hairMesh.position.y = 1.7;
+  gr.add(hairMesh);
+
+  // Eyes
+  for (var ei = -1; ei <= 1; ei += 2) {
+    var eye = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 6), eyeWhite);
+    eye.position.set(ei * 0.08, 1.67, 0.17);
+    gr.add(eye);
+    var pupil = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 6), eyePupil);
+    pupil.position.set(ei * 0.08, 1.67, 0.2);
+    gr.add(pupil);
+  }
+
+  // Body (torso)
+  var torso = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.5, 8), shirt);
+  torso.position.y = 1.2;
+  torso.castShadow = true;
+  gr.add(torso);
+
+  // Left arm
+  var lArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.45, 6), shirt);
+  lArm.position.set(-0.22, 1.25, 0);
+  lArm.rotation.z = 0.15;
+  lArm.castShadow = true;
+  gr.add(lArm);
+  var lHand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 5), skin);
+  lHand.position.set(-0.25, 1.0, 0);
+  gr.add(lHand);
+
+  // Right arm
+  var rArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.45, 6), shirt);
+  rArm.position.set(0.22, 1.25, 0);
+  rArm.rotation.z = -0.15;
+  rArm.castShadow = true;
+  gr.add(rArm);
+  var rHand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 5), skin);
+  rHand.position.set(0.25, 1.0, 0);
+  gr.add(rHand);
+
+  // Hips
+  var hips = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.15, 8), pants);
+  hips.position.y = 0.9;
+  gr.add(hips);
+
+  // Left leg
+  var lLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.5, 6), pants);
+  lLeg.position.set(-0.08, 0.6, 0);
+  lLeg.castShadow = true;
+  gr.add(lLeg);
+  var lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.14), shoes);
+  lShoe.position.set(-0.08, 0.33, 0.03);
+  gr.add(lShoe);
+
+  // Right leg
+  var rLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.5, 6), pants);
+  rLeg.position.set(0.08, 0.6, 0);
+  rLeg.castShadow = true;
+  gr.add(rLeg);
+  var rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.14), shoes);
+  rShoe.position.set(0.08, 0.33, 0.03);
+  gr.add(rShoe);
+
+  gr.userData = { lArm: lArm, rArm: rArm, lLeg: lLeg, rLeg: rLeg };
+  return gr;
 }
 
 // ===== START GAME =====
@@ -430,8 +503,10 @@ function buildWorld() {
           var sp = new THREE.Mesh(new THREE.SphereGeometry(o[3]*s*0.4, 7, 7), ci % 3 === 0 ? cloudMat : cloudMat2);
           sp.position.set(o[0], o[1], o[2]);
           gr.add(sp);
-        });
-      }
+  });
+}
+
+// ===== DAY/NIGHT CYCLE =====
       gr.position.set(rr(-200, 200), 22 + rr(0, 15), rr(-200, 200));
       gr.userData = { driftX: rr(-0.2, 0.2), driftZ: rr(-0.2, 0.2) };
       scene.add(gr);
@@ -603,7 +678,7 @@ function buildWorld() {
 
   // ---- TREES (procedural + palm GLB) ----
   var hasPalm = Models.cache.palm ? true : false;
-  for (var ti = 0; ti < 140; ti++) {
+  for (var ti = 0; ti < 200; ti++) {
     var tx = rr(-85, 85), tz = rr(-85, 85);
     if (tx * tx + tz * tz < 30) continue;
     if (!canPlace(tx, tz, 1.8)) continue;
@@ -821,20 +896,20 @@ function buildWorld() {
     var crystal;
     if (Models.cache.orb) {
       crystal = Models.cache.orb.clone();
-      crystal.scale.set(0.0008, 0.0008, 0.0008);
+      crystal.scale.set(0.002, 0.002, 0.002);
       crystal.position.y += 0.1;
     } else {
       crystal = Models.createCrystalOrb();
     }
     crystal.position.set(ox, oy, oz);
 
-    var glowR = new THREE.Mesh(new THREE.RingGeometry(0.35, 0.55, 16), new THREE.MeshBasicMaterial({
+    var glowR = new THREE.Mesh(new THREE.RingGeometry(0.6, 0.9, 16), new THREE.MeshBasicMaterial({
       color: 0xFFD700, transparent: true, opacity: CFG.mode === 'night' ? 0.5 : 0.25, side: THREE.DoubleSide
     }));
     glowR.position.set(ox, oy, oz); glowR.rotation.x = -Math.PI / 2;
 
     var beamH = oy + 0.3;
-    var beam = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.15, beamH, 6), new THREE.MeshBasicMaterial({
+    var beam = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.25, beamH, 6), new THREE.MeshBasicMaterial({
       color: 0xFFD700, transparent: true, opacity: CFG.mode === 'night' ? 0.3 : 0.15
     }));
     beam.position.set(ox, beamH / 2 - 0.15, oz);
@@ -842,7 +917,7 @@ function buildWorld() {
     // Pedestal under orb
     if (Models.cache.pedestal) {
       var ped = Models.cache.pedestal.clone();
-      var pedScale = 0.002;
+      var pedScale = 0.005;
       ped.scale.set(pedScale, pedScale, pedScale);
       ped.position.set(ox, getHeight(ox, oz), oz);
       ped.rotation.y = sr() * 6.28;
@@ -865,7 +940,7 @@ function buildWorld() {
         var body;
         if (Models.cache.enemy) {
           body = Models.cache.enemy.clone();
-          body.scale.set(0.003, 0.003, 0.003);
+          body.scale.set(0.008, 0.008, 0.008);
           body.rotation.y = rr(0, 6.28);
         } else {
           body = Models.createSlime(1 + rr(0, 0.4));
@@ -1043,6 +1118,9 @@ function checkDash(key) {
 }
 var thirdPersonCam = null;
 var thirdPersonChar = null;
+var photoCamAngle = 0;
+var photoCamDist = 5;
+var photoCamHeight = 2;
 function togglePhotoMode() {
   if (ended || !started) return;
   photoModeActive = !photoModeActive;
@@ -1051,29 +1129,23 @@ function togglePhotoMode() {
     hud.style.display = 'none';
     pauseMenu.style.display = 'none';
     if (document.pointerLockElement) document.exitPointerLock();
-    // Hide first-person arms
     if (playerArms) playerArms.visible = false;
-    // Create third-person camera and character if GLB model exists
-    if (Models.cache.character && !thirdPersonCam) {
+    // Create third-person camera
+    if (!thirdPersonCam) {
       thirdPersonCam = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 400);
       scene.add(thirdPersonCam);
-      thirdPersonChar = Models.cache.character.clone();
-      thirdPersonChar.scale.set(0.35, 0.35, 0.35);
+    }
+    // Create procedural third-person character
+    if (!thirdPersonChar) {
+      thirdPersonChar = createThirdPersonCharacter();
       scene.add(thirdPersonChar);
     }
-    if (thirdPersonCam && thirdPersonChar) {
-      thirdPersonCam.visible = true;
-      thirdPersonChar.visible = true;
-      thirdPersonChar.position.copy(camera.position);
-      thirdPersonChar.position.y -= 0.85;
-      thirdPersonChar.rotation.y = euler.y;
-      thirdPersonCam.position.set(
-        camera.position.x + Math.sin(euler.y) * 4,
-        camera.position.y + 2,
-        camera.position.z + Math.cos(euler.y) * 4
-      );
-      thirdPersonCam.lookAt(camera.position.x, camera.position.y - 0.3, camera.position.z);
-    }
+    thirdPersonCam.visible = true;
+    thirdPersonChar.visible = true;
+    photoCamAngle = euler.y;
+    // Position character at camera location
+    thirdPersonChar.position.set(camera.position.x, camera.position.y - 1.7, camera.position.z);
+    thirdPersonChar.rotation.y = euler.y;
   } else {
     hud.style.display = savedPhotoHud || 'block';
     if (locked) renderer.domElement.requestPointerLock();
@@ -1142,9 +1214,22 @@ function setupControls() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+  // Photo mode: mouse orbit + zoom
+  document.addEventListener('mousemove', function(e) {
+    if (!photoModeActive) return;
+    if (e.buttons === 2) {
+      photoCamAngle -= e.movementX * 0.005;
+      photoCamHeight = Math.max(0.5, Math.min(5, photoCamHeight - e.movementY * 0.02));
+    }
+  });
+  document.addEventListener('wheel', function(e) {
+    if (!photoModeActive) return;
+    photoCamDist = Math.max(2, Math.min(15, photoCamDist + e.deltaY * 0.01));
+  });
+  document.addEventListener('contextmenu', function(e) {
+    if (photoModeActive) e.preventDefault();
+  });
 }
-
-// ===== DAY/NIGHT CYCLE =====
 function updateDayNight(dt) {
   if (CFG.mode === 'night' || CFG.mode === 'time') return;
   dayTime += dt * daySpeed;
@@ -1477,17 +1562,51 @@ function animate() {
     // Weather
     updateWeather(dt);
 
-    // Photo mode - update character and camera each frame
+    // Photo mode - third person camera with WASD + mouse orbit
     if (photoModeActive && thirdPersonCam && thirdPersonChar) {
-      thirdPersonChar.position.copy(camera.position);
-      thirdPersonChar.position.y -= 0.85;
-      thirdPersonChar.rotation.y = euler.y;
+      // WASD movement for character
+      var photoSpd = 8 * dt;
+      var forward = new THREE.Vector3(-Math.sin(photoCamAngle), 0, -Math.cos(photoCamAngle));
+      var right = new THREE.Vector3(Math.cos(photoCamAngle), 0, -Math.sin(photoCamAngle));
+      if (keys.w) { thirdPersonChar.position.addScaledVector(forward, photoSpd); }
+      if (keys.s) { thirdPersonChar.position.addScaledVector(forward, -photoSpd); }
+      if (keys.a) { thirdPersonChar.position.addScaledVector(right, -photoSpd); }
+      if (keys.d) { thirdPersonChar.position.addScaledVector(right, photoSpd); }
+
+      // Keep character on terrain
+      var charY = getHeight(thirdPersonChar.position.x, thirdPersonChar.position.z);
+      thirdPersonChar.position.y = charY;
+      thirdPersonChar.rotation.y = photoCamAngle + Math.PI;
+
+      // Animate character limbs
+      var isMoving = keys.w || keys.a || keys.s || keys.d;
+      var walkTime = time * (keys.shift ? 14 : 10);
+      if (thirdPersonChar.userData.lArm) {
+        if (isMoving) {
+          thirdPersonChar.userData.lArm.rotation.x = Math.sin(walkTime) * 0.4;
+          thirdPersonChar.userData.rArm.rotation.x = -Math.sin(walkTime) * 0.4;
+          thirdPersonChar.userData.lLeg.rotation.x = -Math.sin(walkTime) * 0.4;
+          thirdPersonChar.userData.rLeg.rotation.x = Math.sin(walkTime) * 0.4;
+        } else {
+          thirdPersonChar.userData.lArm.rotation.x *= 0.9;
+          thirdPersonChar.userData.rArm.rotation.x *= 0.9;
+          thirdPersonChar.userData.lLeg.rotation.x *= 0.9;
+          thirdPersonChar.userData.rLeg.rotation.x *= 0.9;
+        }
+      }
+
+      // Camera orbits around character
       thirdPersonCam.position.set(
-        camera.position.x + Math.sin(euler.y) * 4,
-        camera.position.y + 2,
-        camera.position.z + Math.cos(euler.y) * 4
+        thirdPersonChar.position.x + Math.sin(photoCamAngle) * photoCamDist,
+        thirdPersonChar.position.y + photoCamHeight,
+        thirdPersonChar.position.z + Math.cos(photoCamAngle) * photoCamDist
       );
-      thirdPersonCam.lookAt(camera.position.x, camera.position.y - 0.3, camera.position.z);
+      thirdPersonCam.lookAt(thirdPersonChar.position.x, thirdPersonChar.position.y + 1.2, thirdPersonChar.position.z);
+
+      // Sync first-person camera position to character
+      camera.position.copy(thirdPersonChar.position);
+      camera.position.y += 1.7;
+      euler.y = photoCamAngle;
     }
 
     // Movement
@@ -1562,22 +1681,12 @@ function animate() {
         camera.position.y += Math.sin(time * bobSpeed) * 0.025;
         if (playerArms) {
           var swing = Math.sin(time * bobSpeed) * 0.08;
-          if (playerArms.userData.isGLB) {
-            playerArms.position.y = -0.35 + Math.abs(swing) * 0.15;
-            playerArms.rotation.x = Math.sin(time * bobSpeed) * 0.06;
-          } else {
-            playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
-            playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
-          }
+          playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
+          playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
         }
       } else if (playerArms) {
-        if (playerArms.userData.isGLB) {
-          playerArms.position.y += (-0.35 - playerArms.position.y) * 0.05;
-          playerArms.rotation.x *= 0.95;
-        } else {
-          playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
-          playerArms.rotation.z *= 0.95;
-        }
+        playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
+        playerArms.rotation.z *= 0.95;
       }
 
       // Combo timer
