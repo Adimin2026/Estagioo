@@ -212,20 +212,7 @@ function getGrassTexture() {
 // ===== FIRST PERSON ARMS =====
 function createArms() {
   var grp = new THREE.Group();
-
-  // Use the Blender-made character model as first-person arms
-  if (Models.cache.character) {
-    var charModel = Models.cache.character.clone();
-    charModel.scale.set(1, 1, 1);
-    charModel.rotation.set(0, Math.PI, 0);
-    grp.add(charModel);
-    grp.position.set(0, -1.67, -0.5);
-    grp.userData = { swing: 0 };
-    camera.add(grp);
-    return grp;
-  }
-
-  // Fallback: procedural arms
+  // First-person: always procedural arms (GLB body blocks the view)
   var skin = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.8 });
   var shirt = new THREE.MeshStandardMaterial({ color: 0x4488cc, roughness: 0.7 });
   var handMat = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.7 });
@@ -1721,21 +1708,11 @@ function animate() {
         camera.position.y += Math.sin(time * bobSpeed) * 0.025;
         if (playerArms) {
           var swing = Math.sin(time * bobSpeed) * 0.08;
-          var isGLBArm = Models.cache.character && playerArms.children.length > 0 && playerArms.children[0] !== playerArms;
-          if (isGLBArm) {
-            playerArms.position.y = -1.67 + Math.abs(swing) * 0.15;
-          } else {
-            playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
-          }
+          playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
           playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
         }
       } else if (playerArms) {
-        var isGLBArm2 = Models.cache.character && playerArms.children.length > 0;
-        if (isGLBArm2) {
-          playerArms.position.y += (-1.67 - playerArms.position.y) * 0.05;
-        } else {
-          playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
-        }
+        playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
         playerArms.rotation.z *= 0.95;
       }
 
