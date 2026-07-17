@@ -29,6 +29,7 @@ try { var tse = localStorage.getItem('sim3d_total'); if (tse) totalStarsEver = p
 var upgrades = { jumpBonus: 0, staminaBonus: 0, speedBonus: 0, magnetPerm: false };
 try { var u = localStorage.getItem('sim3d_upg'); if (u) upgrades = JSON.parse(u); } catch(e) {}
 var playerArms = null;
+var targetEulerY = 0, targetEulerX = 0;
 
 // Day/Night cycle
 var dayTime = 0.35;
@@ -1111,7 +1112,6 @@ function setupControls() {
     if (e.code === 'KeyP') keys.p = false;
     if (e.code === 'KeyF') keys.f = false;
   });
-  var targetEulerY = 0, targetEulerX = 0;
   document.addEventListener('mousemove', function(e) {
     if (!locked || !started || paused) return;
     var sens = CFG.sensitivity / 10;
