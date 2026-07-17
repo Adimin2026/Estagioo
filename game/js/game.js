@@ -16,7 +16,7 @@ var score = 0, time = 0, timer = 180, timerOn = false, fps = 60;
 var orbs = [], trees = [], grasses = [], clouds = [], rng = 42;
 var nearStarDist = 0, powerupActive = '', powerupTime = 0;
 var targetHeight = 1.7, currentHeight = 1.7;
-var grounded = true, jumpVel = 0, jumpCount = 0, maxJumps = 1;
+var grounded = true, jumpVel = 0, jumpCount = 0, maxJumps = 2;
 var stamina = 100, sprinting = false;
 var combo = 0, comboTimer = 0, comboCount = 0, comboElapsed = 0;
 var dashTimer = 0, dashCooldown = 0, dashDir = null;
@@ -38,7 +38,7 @@ var sunLight = null, hemiLight = null, ambLight = null, skyMat = null;
 // Weather
 var weather = 'clear';
 var weatherTimer = 60 + rr(0, 30);
-var rainDrops = [], rainTotal = 400;
+var rainDrops = [], rainTotal = 200;
 var lightningFlash = 0, lightningTimer = 20 + rr(0, 15);
 
 // River & bridges
@@ -212,47 +212,55 @@ function getGrassTexture() {
 // ===== FIRST PERSON ARMS =====
 function createArms() {
   var grp = new THREE.Group();
+
+  // Try to use the downloaded character model as first-person arms
+  if (Models.cache.character) {
+    var charModel = Models.cache.character.clone();
+    charModel.scale.set(0.08, 0.08, 0.08);
+    charModel.position.set(0, 0, 0);
+    charModel.rotation.set(0, Math.PI, 0);
+    grp.add(charModel);
+    grp.position.set(0.15, -0.5, -0.45);
+    grp.userData = { swing: 0, isGLB: true };
+    camera.add(grp);
+    return grp;
+  }
+
+  // Fallback: procedural arms
   var skin = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.8 });
   var shirt = new THREE.MeshStandardMaterial({ color: 0x4488cc, roughness: 0.7 });
   var handMat = new THREE.MeshStandardMaterial({ color: 0xDEB887, roughness: 0.7 });
 
-  // Left arm (upper)
   var lu = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 0.22, 6), shirt);
   lu.position.set(-0.22, -0.12, -0.15);
   lu.rotation.z = 0.35; lu.rotation.x = -0.6;
   grp.add(lu);
-  // Left forearm
   var lf = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.22, 6), skin);
   lf.position.set(-0.27, -0.3, -0.08);
   lf.rotation.z = 0.15;
   grp.add(lf);
-  // Left hand
   var lh = new THREE.Mesh(new THREE.SphereGeometry(0.035, 5, 5), handMat);
   lh.position.set(-0.3, -0.42, -0.06);
   grp.add(lh);
 
-  // Right arm (upper)
   var ru = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 0.22, 6), shirt);
   ru.position.set(0.22, -0.12, -0.15);
   ru.rotation.z = -0.35; ru.rotation.x = -0.6;
   grp.add(ru);
-  // Right forearm
   var rf = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.22, 6), skin);
   rf.position.set(0.27, -0.3, -0.08);
   rf.rotation.z = -0.15;
   grp.add(rf);
-  // Right hand
   var rh = new THREE.Mesh(new THREE.SphereGeometry(0.035, 5, 5), handMat);
   rh.position.set(0.3, -0.42, -0.06);
   grp.add(rh);
 
-  // Gold orb in right hand (collect hint)
   var orbHint = new THREE.Mesh(new THREE.SphereGeometry(0.025, 6, 6), new THREE.MeshStandardMaterial({ color: 0xFFD700, emissive: 0xFFA500, emissiveIntensity: 0.3 }));
   orbHint.position.set(0.33, -0.42, -0.06);
   grp.add(orbHint);
 
   grp.position.set(0, -0.2, -0.4);
-  grp.userData = { swing: 0 };
+  grp.userData = { swing: 0, isGLB: false };
   camera.add(grp);
   return grp;
 }
@@ -290,7 +298,15 @@ function startGame() {
       enemy: 'models/scifi-drone.glb',
       column: 'models/column.glb',
       machine: 'models/scifi-machine.glb',
-      platform: 'models/platform.glb'
+      platform: 'models/platform.glb',
+      palm: 'models/palm-tree.glb',
+      bush: 'models/bush01.glb',
+      cloud01: 'models/cloud01.glb',
+      cloud02: 'models/cloud02.glb',
+      mountain: 'models/mountain01.glb',
+      flower: 'models/flower01.glb',
+      pedestal: 'models/crystal-base.glb',
+      character: 'models/character.glb'
     }).then(function () {
       if (loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
       buildWorld();
@@ -384,26 +400,39 @@ function buildWorld() {
 
   grasses = []; slimes = []; animals = []; clouds = []; fireflies = []; waterMesh = null;
 
-  // ---- CLOUDS ----
+  // ---- CLOUDS (mix of GLB and procedural) ----
   (function() {
-    var cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, roughness: 1, metalness: 0, depthWrite: false });
     var isNight = CFG.mode === 'night';
+    var cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.5, roughness: 1, metalness: 0, depthWrite: false });
     var clr = isNight ? 0x333355 : 0xffffff;
     var cloudMat2 = new THREE.MeshStandardMaterial({ color: clr, transparent: true, opacity: isNight ? 0.25 : 0.5, roughness: 1, metalness: 0, depthWrite: false });
-    for (var ci = 0; ci < 18; ci++) {
-      var gr = new THREE.Group();
-      var cx = rr(-180, 180), cz = rr(-180, 180), cy = 25 + rr(0, 10);
-      var s = 4 + rr(0, 8);
-      var offs = [
-        [0,0,0,1],[0.7*s,0.08*s,0.25*s,0.7],[-0.6*s,0.04*s,-0.15*s,0.6],
-        [0.25*s,0.12*s,-0.4*s,0.5],[-0.2*s,-0.04*s,0.5*s,0.45],[0.4*s,-0.08*s,-0.25*s,0.4]
-      ];
-      offs.forEach(function(o) {
-        var sp = new THREE.Mesh(new THREE.SphereGeometry(o[3]*s*0.4, 7, 7), ci % 3 === 0 ? cloudMat : cloudMat2);
-        sp.position.set(o[0], o[1], o[2]);
-        gr.add(sp);
-      });
-      gr.position.set(cx, cy, cz);
+    var glbClouds = [];
+    if (Models.cache.cloud01) glbClouds.push(Models.cache.cloud01);
+    if (Models.cache.cloud02) glbClouds.push(Models.cache.cloud02);
+    for (var ci = 0; ci < 22; ci++) {
+      var useGLB = glbClouds.length > 0 && ci % 3 === 1;
+      var gr;
+      if (useGLB) {
+        gr = glbClouds[ci % glbClouds.length].clone();
+        var cloudScale = 0.3 + rr(0, 0.25);
+        gr.scale.set(cloudScale, cloudScale, cloudScale);
+        if (isNight) {
+          gr.traverse(function (c) { if (c.isMesh) c.material.color.setHex(0x333355); });
+        }
+      } else {
+        gr = new THREE.Group();
+        var s = 4 + rr(0, 8);
+        var offs = [
+          [0,0,0,1],[0.7*s,0.08*s,0.25*s,0.7],[-0.6*s,0.04*s,-0.15*s,0.6],
+          [0.25*s,0.12*s,-0.4*s,0.5],[-0.2*s,-0.04*s,0.5*s,0.45],[0.4*s,-0.08*s,-0.25*s,0.4]
+        ];
+        offs.forEach(function(o) {
+          var sp = new THREE.Mesh(new THREE.SphereGeometry(o[3]*s*0.4, 7, 7), ci % 3 === 0 ? cloudMat : cloudMat2);
+          sp.position.set(o[0], o[1], o[2]);
+          gr.add(sp);
+        });
+      }
+      gr.position.set(rr(-200, 200), 22 + rr(0, 15), rr(-200, 200));
       gr.userData = { driftX: rr(-0.2, 0.2), driftZ: rr(-0.2, 0.2) };
       scene.add(gr);
       clouds.push(gr);
@@ -411,7 +440,7 @@ function buildWorld() {
   })();
 
   // ---- TERRAIN WITH HEIGHT ----
-  var gs = 300, segs = 100;
+  var gs = 300, segs = 80;
   var tGeo = new THREE.PlaneGeometry(gs, gs, segs, segs);
   tGeo.rotateX(-Math.PI / 2);
   var pos = tGeo.attributes.position.array;
@@ -470,22 +499,34 @@ function buildWorld() {
   (function() {
     var mMat = new THREE.MeshStandardMaterial({ color: 0x4a6a5a, roughness: 0.95, flatShading: true, vertexColors: false });
     var mMat2 = new THREE.MeshStandardMaterial({ color: 0x3a5a4a, roughness: 0.95, flatShading: true });
-    for (var mi = 0; mi < 28; mi++) {
+    var hasGLBMtn = Models.cache.mountain ? true : false;
+    for (var mi = 0; mi < 24; mi++) {
       var ang = rr(0, 6.28);
-      var rad = 110 + rr(0, 25);
+      var rad = 105 + rr(0, 30);
       var mx = Math.cos(ang) * rad;
       var mz = Math.sin(ang) * rad;
-      var mh = 12 + rr(0, 18);
-      var mRad = 6 + rr(0, 6);
-      var m = new THREE.Mesh(new THREE.ConeGeometry(mRad, mh, ri(6, 9)), mi % 2 === 0 ? mMat : mMat2);
-      m.position.set(mx, getHeight(mx, mz), mz);
-      m.castShadow = true;
-      scene.add(m);
-      if (mi % 3 === 0) {
-        var small = new THREE.Mesh(new THREE.ConeGeometry(mRad * 0.6, mh * 0.5, ri(5, 7)), mMat2);
-        small.position.set(mx + rr(-6, 6), getHeight(mx, mz), mz + rr(-6, 6));
-        small.castShadow = true;
-        scene.add(small);
+      var useGLB = hasGLBMtn && mi < 4;
+      if (useGLB) {
+        var mtn = Models.cache.mountain.clone();
+        var mtnScale = 0.4 + rr(0, 0.3);
+        mtn.scale.set(mtnScale, mtnScale, mtnScale);
+        mtn.position.set(mx, getHeight(mx, mz), mz);
+        mtn.rotation.y = rr(0, 6.28);
+        mtn.traverse(function (c) { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+        scene.add(mtn);
+      } else {
+        var mh = 10 + rr(0, 20);
+        var mRad = 5 + rr(0, 7);
+        var m = new THREE.Mesh(new THREE.ConeGeometry(mRad, mh, ri(6, 9)), mi % 2 === 0 ? mMat : mMat2);
+        m.position.set(mx, getHeight(mx, mz), mz);
+        m.castShadow = true;
+        scene.add(m);
+        if (mi % 4 === 0) {
+          var small = new THREE.Mesh(new THREE.ConeGeometry(mRad * 0.6, mh * 0.5, ri(5, 7)), mMat2);
+          small.position.set(mx + rr(-6, 6), getHeight(mx, mz), mz + rr(-6, 6));
+          small.castShadow = true;
+          scene.add(small);
+        }
       }
     }
   })();
@@ -560,16 +601,27 @@ function buildWorld() {
   }
   trees = [];
 
-  // ---- IMPROVED TREES (multi-layer canopy) ----
-  for (var ti = 0; ti < 180; ti++) {
+  // ---- TREES (procedural + palm GLB) ----
+  var hasPalm = Models.cache.palm ? true : false;
+  for (var ti = 0; ti < 140; ti++) {
     var tx = rr(-85, 85), tz = rr(-85, 85);
     if (tx * tx + tz * tz < 30) continue;
     if (!canPlace(tx, tz, 1.8)) continue;
     placed.push([tx, tz]);
-    var gr = Models.createDetailedTree({ scale: 1.0 + rr(0, 1.8) });
-    gr.position.set(tx, getHeight(tx, tz), tz);
-    gr.rotation.y = sr() * 6.28;
-    gr.scale.set(1, 1, 1);
+    var usePalm = hasPalm && ti % 7 === 0;
+    var gr;
+    if (usePalm) {
+      gr = Models.cache.palm.clone();
+      var palmScale = 0.02 + rr(0, 0.01);
+      gr.scale.set(palmScale, palmScale, palmScale);
+      gr.position.set(tx, getHeight(tx, tz), tz);
+      gr.rotation.y = sr() * 6.28;
+      gr.traverse(function (c) { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+    } else {
+      gr = Models.createDetailedTree({ scale: 1.0 + rr(0, 1.8) });
+      gr.position.set(tx, getHeight(tx, tz), tz);
+      gr.rotation.y = sr() * 6.28;
+    }
     scene.add(gr);
     trees.push(gr);
   }
@@ -633,7 +685,7 @@ function buildWorld() {
 
   // ---- DOWNLOADED MODEL DECORATIONS (column, machine) ----
   if (Models.cache.column) {
-    for (var di = 0; di < 12; di++) {
+    for (var di = 0; di < 8; di++) {
       var dx2 = rr(-80, 80), dz2 = rr(-80, 80);
       if (dx2 * dx2 + dz2 * dz2 < 30 || !canPlace(dx2, dz2, 3)) continue;
       placed.push([dx2, dz2]);
@@ -661,11 +713,42 @@ function buildWorld() {
     }
   }
 
+  // ---- BUSHES (GLB) ----
+  if (Models.cache.bush) {
+    for (var bi2 = 0; bi2 < 15; bi2++) {
+      var bx = rr(-80, 80), bz = rr(-80, 80);
+      if (bx * bx + bz * bz < 25 || !canPlace(bx, bz, 2.5)) continue;
+      placed.push([bx, bz]);
+      var bush = Models.cache.bush.clone();
+      var bushScale = 0.015 + rr(0, 0.01);
+      bush.scale.set(bushScale, bushScale, bushScale);
+      bush.position.set(bx, getHeight(bx, bz), bz);
+      bush.rotation.y = rr(0, 6.28);
+      bush.traverse(function (c) { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+      scene.add(bush);
+    }
+  }
+
+  // ---- FLOWERS (GLB) ----
+  if (Models.cache.flower) {
+    for (var fli = 0; fli < 10; fli++) {
+      var fx2 = rr(-70, 70), fz2 = rr(-70, 70);
+      if (fx2 * fx2 + fz2 * fz2 < 25 || !canPlace(fx2, fz2, 2)) continue;
+      placed.push([fx2, fz2]);
+      var flower = Models.cache.flower.clone();
+      var flScale = 0.03 + rr(0, 0.02);
+      flower.scale.set(flScale, flScale, flScale);
+      flower.position.set(fx2, getHeight(fx2, fz2), fz2);
+      flower.rotation.y = rr(0, 6.28);
+      scene.add(flower);
+    }
+  }
+
   // ---- GRASS SPRITES ----
   (function() {
     var gTex = getGrassTexture();
     var gMat = new THREE.SpriteMaterial({ map: gTex, transparent: true, depthWrite: false, opacity: 0.8 });
-    for (var gi = 0; gi < 250; gi++) {
+    for (var gi = 0; gi < 180; gi++) {
       var gx = rr(-88, 88), gz = rr(-88, 88);
       if (gx * gx + gz * gz < 25) continue;
       var gh = getHeight(gx, gz);
@@ -702,7 +785,7 @@ function buildWorld() {
         depthWrite: false,
         blending: THREE.AdditiveBlending
       });
-      for (var fi = 0; fi < 40; fi++) {
+      for (var fi = 0; fi < 25; fi++) {
         var fx = rr(-70, 70), fz = rr(-70, 70);
         if (fx * fx + fz * fz < 36) continue;
         var fh = getHeight(fx, fz) + 0.5 + rr(0, 1.5);
@@ -755,6 +838,16 @@ function buildWorld() {
       color: 0xFFD700, transparent: true, opacity: CFG.mode === 'night' ? 0.3 : 0.15
     }));
     beam.position.set(ox, beamH / 2 - 0.15, oz);
+
+    // Pedestal under orb
+    if (Models.cache.pedestal) {
+      var ped = Models.cache.pedestal.clone();
+      var pedScale = 0.02;
+      ped.scale.set(pedScale, pedScale, pedScale);
+      ped.position.set(ox, getHeight(ox, oz), oz);
+      ped.rotation.y = sr() * 6.28;
+      scene.add(ped);
+    }
 
     var pulsePhase = sr() * 6.28;
     scene.add(crystal); scene.add(glowR); scene.add(beam);
@@ -912,7 +1005,7 @@ function setupLights() {
     hemiLight = new THREE.HemisphereLight(0x7ec8e3, 0x3a7d44, 0.5); scene.add(hemiLight);
     sunLight = new THREE.DirectionalLight(0xffeedd, 1.8);
     sunLight.position.set(60, 100, 40); sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048; sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.mapSize.width = 1024; sunLight.shadow.mapSize.height = 1024;
     sunLight.shadow.camera.near = 1; sunLight.shadow.camera.far = 250;
     sunLight.shadow.camera.left = -100; sunLight.shadow.camera.right = 100;
     sunLight.shadow.camera.top = 100; sunLight.shadow.camera.bottom = -100;
@@ -948,6 +1041,8 @@ function checkDash(key) {
   }
   dashKeyTime[key] = now;
 }
+var thirdPersonCam = null;
+var thirdPersonChar = null;
 function togglePhotoMode() {
   if (ended || !started) return;
   photoModeActive = !photoModeActive;
@@ -956,9 +1051,35 @@ function togglePhotoMode() {
     hud.style.display = 'none';
     pauseMenu.style.display = 'none';
     if (document.pointerLockElement) document.exitPointerLock();
+    // Hide first-person arms
+    if (playerArms) playerArms.visible = false;
+    // Create third-person camera and character if GLB model exists
+    if (Models.cache.character && !thirdPersonCam) {
+      thirdPersonCam = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 400);
+      scene.add(thirdPersonCam);
+      thirdPersonChar = Models.cache.character.clone();
+      thirdPersonChar.scale.set(0.5, 0.5, 0.5);
+      scene.add(thirdPersonChar);
+    }
+    if (thirdPersonCam && thirdPersonChar) {
+      thirdPersonCam.visible = true;
+      thirdPersonChar.visible = true;
+      thirdPersonChar.position.copy(camera.position);
+      thirdPersonChar.position.y -= 0.85;
+      thirdPersonChar.rotation.y = euler.y;
+      thirdPersonCam.position.set(
+        camera.position.x + Math.sin(euler.y) * 4,
+        camera.position.y + 2,
+        camera.position.z + Math.cos(euler.y) * 4
+      );
+      thirdPersonCam.lookAt(camera.position.x, camera.position.y - 0.3, camera.position.z);
+    }
   } else {
     hud.style.display = savedPhotoHud || 'block';
     if (locked) renderer.domElement.requestPointerLock();
+    if (playerArms) playerArms.visible = true;
+    if (thirdPersonCam) thirdPersonCam.visible = false;
+    if (thirdPersonChar) thirdPersonChar.visible = false;
   }
 }
 
@@ -969,7 +1090,7 @@ function setupControls() {
     if (e.code === 'KeyA') { keys.a = true; checkDash('a'); }
     if (e.code === 'KeyS') { keys.s = true; checkDash('s'); }
     if (e.code === 'KeyD') { keys.d = true; checkDash('d'); }
-    if (e.code === 'Space' && started && !paused) { e.preventDefault(); keys.space = true; if (grounded) { jumpVel = 5.5 + upgrades.jumpBonus * 0.5; grounded = false; } }
+    if (e.code === 'Space' && started && !paused) { e.preventDefault(); keys.space = true; if (jumpCount < maxJumps + upgrades.jumpBonus) { jumpVel = 5.5 + upgrades.jumpBonus * 0.5; grounded = false; jumpCount++; } }
     if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.shift = true;
     if (e.code === 'KeyE' && started) keys.e = true;
     if (e.code === 'KeyB' && started) keys.b = true;
@@ -990,15 +1111,15 @@ function setupControls() {
     if (e.code === 'KeyP') keys.p = false;
     if (e.code === 'KeyF') keys.f = false;
   });
+  var targetEulerY = 0, targetEulerX = 0;
   document.addEventListener('mousemove', function(e) {
     if (!locked || !started || paused) return;
     var sens = CFG.sensitivity / 10;
-    euler.setFromQuaternion(camera.quaternion);
-    euler.y -= e.movementX * 0.002 * sens;
-    euler.x -= e.movementY * 0.002 * sens;
-    euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
-    camera.quaternion.setFromEuler(euler);
+    targetEulerY -= e.movementX * 0.002 * sens;
+    targetEulerX -= e.movementY * 0.002 * sens;
+    targetEulerX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, targetEulerX));
   });
+  // Apply smooth camera each frame in the animation loop
   startOv.addEventListener('click', function() {
     if (ended) return;
     started = true;
@@ -1356,6 +1477,14 @@ function animate() {
     // Weather
     updateWeather(dt);
 
+    // Smooth camera
+    if (locked && started && !paused) {
+      euler.setFromQuaternion(camera.quaternion);
+      euler.y += (targetEulerY - euler.y) * Math.min(1, dt * 12);
+      euler.x += (targetEulerX - euler.x) * Math.min(1, dt * 12);
+      camera.quaternion.setFromEuler(euler);
+    }
+
     // Movement
     if (started && !photoModeActive) {
       var baseSpd = 10 + upgrades.speedBonus;
@@ -1381,7 +1510,7 @@ function animate() {
       // Sprint stamina
       if (sprinting) { stamina = Math.max(0, stamina - 25 * dt); }
       else { stamina = Math.min(100, stamina + 15 * dt); }
-      if (staminaEl) staminaEl.style.width = stamina + '%';
+      if (staminaEl) { staminaEl.style.width = stamina + '%'; staminaEl.style.background = stamina > 60 ? '#44dd88' : stamina > 30 ? '#ddaa33' : '#dd4444'; }
       if (staminaText) staminaText.textContent = Math.round(stamina) + '%';
       if (dashCooldown > 0) { dashCooldown -= dt; if (dashCooldown <= 0 && dashEl) dashEl.style.display = 'none'; }
       else if (dashEl && dashTimer <= 0) dashEl.style.display = 'none';
@@ -1401,7 +1530,7 @@ function animate() {
         vel.x *= 0.88; vel.z *= 0.88;
       }
 
-      // Jump physics
+      // Jump physics (double jump)
       if (!grounded) {
         jumpVel -= 9.8 * dt;
         camera.position.y += jumpVel * dt;
@@ -1410,9 +1539,11 @@ function animate() {
           camera.position.y = gh;
           grounded = true;
           jumpVel = 0;
+          jumpCount = 0;
         }
       } else {
         camera.position.y = getHeight(camera.position.x, camera.position.z) + 1.7;
+        jumpCount = 0;
       }
 
       var nx = camera.position.x + vel.x * dt;
@@ -1426,12 +1557,22 @@ function animate() {
         camera.position.y += Math.sin(time * bobSpeed) * 0.025;
         if (playerArms) {
           var swing = Math.sin(time * bobSpeed) * 0.08;
-          playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
-          playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
+          if (playerArms.userData.isGLB) {
+            playerArms.position.y = -0.5 + Math.abs(swing) * 0.15;
+            playerArms.rotation.x = Math.sin(time * bobSpeed) * 0.06;
+          } else {
+            playerArms.position.y = -0.2 + Math.abs(swing) * 0.3;
+            playerArms.rotation.z = Math.cos(time * bobSpeed) * 0.05;
+          }
         }
       } else if (playerArms) {
-        playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
-        playerArms.rotation.z *= 0.95;
+        if (playerArms.userData.isGLB) {
+          playerArms.position.y += (-0.5 - playerArms.position.y) * 0.05;
+          playerArms.rotation.x *= 0.95;
+        } else {
+          playerArms.position.y += (-0.2 - playerArms.position.y) * 0.05;
+          playerArms.rotation.z *= 0.95;
+        }
       }
 
       // Combo timer
@@ -1461,6 +1602,8 @@ function animate() {
           if (comboEl) {
             comboEl.style.display = 'inline';
             comboEl.innerHTML = combo > 1 ? '&#9889; Combo x' + combo + ' (+' + bonus + ')' : '';
+            comboEl.style.transform = 'scale(1.3)';
+            setTimeout(function(){ if(comboEl) comboEl.style.transform = 'scale(1)'; }, 150);
           }
           totalStarsEver++;
           try { localStorage.setItem('sim3d_total', totalStarsEver.toString()); } catch(e) {}
@@ -1496,7 +1639,7 @@ function animate() {
         return;
       }
 
-      // Slime hit
+      // Enemy hit (slimes and drones)
       if (invincible > 0) invincible -= dt;
       for (var si = 0; si < slimes.length; si++) {
         var sl = slimes[si];
@@ -1508,24 +1651,32 @@ function animate() {
           }
           continue;
         }
+        var isDrone = !sl.userData.procedural;
+        var chaseRange = isDrone ? 16 : 8;
+        var hitRange = isDrone ? 2.5 : 2;
         var sd = camera.position.distanceTo(sl.position);
-        if (sd < 8) {
+        if (sd < chaseRange) {
           var dirToPlayer = new THREE.Vector3(camera.position.x - sl.position.x, 0, camera.position.z - sl.position.z).normalize();
-          sl.position.x += dirToPlayer.x * (-sl.userData.speed) * dt;
-          sl.position.z += dirToPlayer.z * (-sl.userData.speed) * dt;
-        } else if (sd < 20) {
+          var chaseSpeed = isDrone ? sl.userData.speed * 1.8 : sl.userData.speed;
+          sl.position.x += dirToPlayer.x * (-chaseSpeed) * dt;
+          sl.position.z += dirToPlayer.z * (-chaseSpeed) * dt;
+        } else if (sd < 25) {
           var dx = sl.userData.targetX - sl.position.x;
           var dz = sl.userData.targetZ - sl.position.z;
           var dd = Math.sqrt(dx * dx + dz * dz);
           if (dd < 1) {
-            sl.userData.targetX = sl.userData.homeX + rr(-10, 10);
-            sl.userData.targetZ = sl.userData.homeZ + rr(-10, 10);
+            sl.userData.targetX = sl.userData.homeX + rr(-15, 15);
+            sl.userData.targetZ = sl.userData.homeZ + rr(-15, 15);
           }
           sl.position.x += (dx / dd) * sl.userData.speed * dt * 0.5;
           sl.position.z += (dz / dd) * sl.userData.speed * dt * 0.5;
         }
-        var baseY = sl.userData.procedural ? 0.3 : 1.0;
+        var baseY = sl.userData.procedural ? 0.3 : 1.2;
         sl.position.y = getHeight(sl.position.x, sl.position.z) + baseY + Math.sin(time * sl.userData.speed + sl.userData.phase) * 0.3;
+        // Drone hover rotation
+        if (isDrone) {
+          sl.rotation.y += dt * 0.5;
+        }
         if (sl.userData.procedural) {
           var sq = Math.sin(time * sl.userData.speed + sl.userData.phase);
           sl.scale.y = 1 + sq * 0.15;
@@ -1533,7 +1684,7 @@ function animate() {
           sl.scale.z = 1 - sq * 0.08;
         }
 
-        if (sd < 2 && invincible <= 0 && sl.userData.alive) {
+        if (sd < hitRange && invincible <= 0 && sl.userData.alive) {
           score = Math.max(0, score - 1);
           scoreEl.innerHTML = '&#11088; ' + score + '/' + CFG.total;
           invincible = 1;
@@ -1622,5 +1773,11 @@ function animate() {
     }
   }
 
-  if (!photoModeActive) renderer.render(scene, camera);
+  if (!photoModeActive) {
+    renderer.render(scene, camera);
+  } else if (thirdPersonCam && thirdPersonCam.visible) {
+    renderer.render(scene, thirdPersonCam);
+  } else {
+    renderer.render(scene, camera);
+  }
 }
